@@ -40,6 +40,26 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="price" class="form-label">Price<span class="required">*</span></label>
+                                    <input type="number" id="price" name="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="price" required>
+                                    @error('price')
+                                    <div id="price-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="quantity" class="form-label">Quantity<span class="required">*</span></label>
+                                    <input type="number" id="quantity" name="quantity" class="form-control @error('quantity') is-invalid @enderror" value="{{ old('quantity', $product->quantity) }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="quantity" required>
+                                    @error('quantity')
+                                    <div id="quantity-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
                         <div class="text-right">
                             <a href="{{ route('admin.products.index') }}" class="btn btn-light">Cancel</a>
                             <button type="submit" class="btn btn-primary">Update</button>

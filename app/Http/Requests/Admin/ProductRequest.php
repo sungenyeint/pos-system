@@ -27,6 +27,16 @@ class ProductRequest extends BaseFormRequest
             'name' => [
                 'required',
                 'max:' . config('const.default_text_maxlength'),
+            ],
+            'price' => [
+                'required',
+                'decimal:0,2',
+                'max:9999999999.99',
+            ],
+            'quantity' => [
+                'required',
+                'integer',
+                'min:1',
             ]
         ];
     }

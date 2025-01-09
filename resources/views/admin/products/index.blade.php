@@ -23,7 +23,7 @@
                                             <option value="">選択してください。</option>
                                             @foreach ($categories as $category)
                                                 <option value="{{ $category->id }}" @if (request()->category_id == $category->id) selected @endif>
-                                                    {{ $category->id }}
+                                                    {{ $category->name }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -62,6 +62,8 @@
                                     <tr>
                                         <th>Category</th>
                                         <th>Name</th>
+                                        <th>Price</th>
+                                        <th>quantity</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -70,6 +72,8 @@
                                     <tr>
                                         <td>{{ Str::limit($product->category->name, 20) }}</td>
                                         <td>{{ Str::limit($product->name, 20) }}</td>
+                                        <td>{{ number_format($product->price) }}</td>
+                                        <td>{{ $product->quantity }}</td>
                                         <td>
                                             <form method="POST" class="form-destroy" action="{{ route('admin.products.destroy', $product->id) }}">
                                                 @csrf
