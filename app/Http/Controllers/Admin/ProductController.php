@@ -45,9 +45,9 @@ class ProductController extends Controller
                 Product::create($request->all());
             });
         } catch (\Exception $e) {
-            return redirect()->back()
+            return back()
                 ->withInput()
-                ->with('error', 'Failed to create product. ' . $e->getMessage());
+                ->with('alert.error', 'Failed to create product. ' . $e->getMessage());
         }
         return redirect()->route('admin.products.index')
             ->with('success', 'Product created successfully.');
@@ -75,9 +75,9 @@ class ProductController extends Controller
                 $product->update($request->all());
             });
         } catch (\Exception $e) {
-            return redirect()->back()
+            return back()
                 ->withInput()
-                ->with('error', 'Failed to update product. ' . $e->getMessage());
+                ->with('alert.error', 'Failed to update product. ' . $e->getMessage());
         }
 
         return redirect()->route('admin.products.index')
@@ -92,9 +92,9 @@ class ProductController extends Controller
 
             });
         } catch (\Exception $e) {
-            return redirect()->back()
+            return back()
                 ->withInput()
-                ->with('error', 'Failed to update product. ' . $e->getMessage());
+                ->with('alert.error', 'Failed to update product. ' . $e->getMessage());
         }
         return redirect()->route('admin.products.index')
             ->with('success', 'Product deleted successfully.');

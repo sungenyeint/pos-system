@@ -1,14 +1,14 @@
 @extends('admin.layouts.main')
-@section('title', 'Product Management')
+@section('title', 'Purchase Management')
 @section('widgetbar')
-<a href="{{ route('admin.products.create') }}" class="btn btn-outline-primary"><i class="ri-add-line align-middle mr-2"></i>Add</a>
+<a href="{{ route('admin.purchases.create') }}" class="btn btn-outline-primary"><i class="ri-add-line align-middle mr-2"></i>Add</a>
 @endsection
 @section('content')
 
 <div class="contentbar">
     <div class="row">
         <div class="col-lg-12">
-            <form method="GET" class="form-search" action="{{ route('admin.products.index') }}" autocomplete="off">
+            <form method="GET" class="form-search" action="{{ route('admin.purchases.index') }}" autocomplete="off">
                 <div class="card m-b-30" id="search_box">
                     <div class="card-header collapsed" data-toggle="collapse" data-target="#searchCollapse" aria-expanded="false" style="cursor: pointer;">
                         <h5 class="card-title">Search</h5>
@@ -18,21 +18,15 @@
                             <div class="row">
                                 <div class="col-3">
                                     <div class="form-group">
-                                        <label for="category_id">Category</label>
-                                        <select id="category_id" name="category_id" class="form-control">
+                                        <label for="product_id">Product</label>
+                                        <select id="product_id" name="product_id" class="form-control">
                                             <option value="">選択してください。</option>
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}" @if (request()->category_id == $category->id) selected @endif>
-                                                    {{ $category->name }}
+                                            @foreach ($products as $product)
+                                                <option value="{{ $product->id }}" @if (request()->product_id == $product->id) selected @endif>
+                                                    {{ $product->name }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="form-group">
-                                        <label for="name">Name</label>
-                                        <input type="text" id="name" name="name" class="form-control" value="{{ request()->name }}" placeholder="Name">
                                     </div>
                                 </div>
                             </div>
@@ -50,40 +44,38 @@
         <div class="col-lg-12">
             <div class="card m-b-30">
                 <div class="card-header">
-                    <h5 class="card-title">product List</h5>
+                    <h5 class="card-title">Purchase List</h5>
                 </div>
                 <div class="card-body">
 
-                    @forelse ($products as $product)
+                    @forelse ($purchases as $purchase)
                         @if ($loop->first)
                         <div class="table-responsive m-b-30">
                             <table id="posts-table" class="table">
                                 <thead class="text-nowrap">
                                     <tr>
-                                        <th>Category</th>
-                                        <th>Name</th>
-                                        <th>Unit Cost</th>
-                                        <th>Unit Price</th>
-                                        <th>Stock Quantity</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total Cost</th>
+                                        <th>Purchase Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                         @endif
                                     <tr>
-                                        <td>{{ Str::limit($product->category->name, 20) }}</td>
-                                        <td>{{ Str::limit($product->name, 20) }}</td>
-                                        <td>{{ number_format($product->unit_cost) }}</td>
-                                        <td>{{ number_format($product->unit_price) }}</td>
-                                        <td>{{ $product->stock_quantity }}</td>
+                                        <td>{{ Str::limit($purchase->product->name, 20) }}</td>
+                                        <td>{{ $purchase->quantity }}</td>
+                                        <td>{{ number_format($purchase->total_cost) }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('Y-m-d H:i') }}</td>
                                         <td>
-                                            <form method="POST" class="form-destroy" action="{{ route('admin.products.destroy', $product->id) }}">
+                                            <form method="POST" class="form-destroy" action="{{ route('admin.purchases.destroy', $purchase->id) }}">
                                                 @csrf
                                                 @method('DELETE')
-                                                <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn btn-outline-success">
+                                                <a href="{{ route('admin.purchases.edit', $purchase->id) }}" class="btn btn btn-outline-success">
                                                     <i class="feather icon-edit mr-2"></i>Edit
                                                 </a>
-                                                @if ($product->id)
+                                                @if ($purchase->id)
                                                 <button type="submit" class="btn btn btn-outline-danger"><i class="feather icon-trash-2 mr-2"></i>Delete</button>
                                                 @endif
                                             </form>
@@ -99,9 +91,9 @@
                     @endforelse
 
                 </div>
-                @if ($products->count() > 0)
+                @if ($purchases->count() > 0)
                 <div class="card-footer clearfix">
-                    {{ $products->appends(request()->input())->links('pagination::admin') }}
+                    {{ $purchases->appends(request()->input())->links('pagination::admin') }}
                 </div>
                 @endif
             </div>

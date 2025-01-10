@@ -20,7 +20,12 @@
             </li>
             <li id="products">
                 <a href="{{ route('admin.products.index') }}">
-                    <i class="fa fa-list"></i><span>Product Management</span>
+                    <i class="fa fa-product-hunt"></i><span>Product Management</span>
+                </a>
+            </li>
+            <li id="purchases">
+                <a href="{{ route('admin.purchases.index') }}">
+                    <i class="fa fa-list"></i><span>Purchase Management</span>
                 </a>
             </li>
         </ul>

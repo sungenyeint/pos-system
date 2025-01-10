@@ -3,9 +3,9 @@
 namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\BaseFormRequest;
-use App\Models\Category;
+use App\Models\Product;
 
-class ProductRequest extends BaseFormRequest
+class PurchaseRequest extends BaseFormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -15,33 +15,28 @@ class ProductRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'category_id' => [
+            'product_id' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $category = Category::find($value);
-                    if (is_null($category)) {
+                    $product = Product::find($value);
+                    if ($product === null) {
                         return $fail('選択された' . $attribute . 'は正しくありません。');
                     }
                 },
             ],
-            'name' => [
-                'required',
-                'max:' . config('const.default_text_maxlength'),
-            ],
-            'unit_cost' => [
-                'required',
-                'decimal:0,2',
-                'max:9999999999.99',
-            ],
-            'unit_price' => [
-                'required',
-                'decimal:0,2',
-                'max:9999999999.99',
-            ],
-            'stock_quantity' => [
+            'quantity' => [
                 'required',
                 'integer',
                 'min:1',
+            ],
+            'total_cost' => [
+                'required',
+                'decimal:0,2',
+                'max:9999999999.99',
+            ],
+            'purchase_date' => [
+                'required',
+                'date_format:Y-m-d H:i',
             ]
         ];
     }

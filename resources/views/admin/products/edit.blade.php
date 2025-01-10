@@ -52,10 +52,21 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label for="quantity" class="form-label">Quantity<span class="required">*</span></label>
-                                    <input type="number" id="quantity" name="quantity" class="form-control @error('quantity') is-invalid @enderror" value="{{ old('quantity', $product->quantity) }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="quantity" required>
-                                    @error('quantity')
-                                    <div id="quantity-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
+                                    <label for="unit_price" class="form-label">Unit Price<span class="required">*</span></label>
+                                    <input type="number" id="unit_price" name="unit_price" class="form-control @error('unit_price') is-invalid @enderror" value="{{ old('unit_price', $product->unit_price) }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="Unit Price" required>
+                                    @error('unit_price')
+                                    <div id="unit_price-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="stock_quantity" class="form-label">Stock Quantity<span class="required">*</span></label>
+                                    <input type="number" id="stock_quantity" name="stock_quantity" class="form-control @error('stock_quantity') is-invalid @enderror" value="{{ old('stock_quantity', $product->stock_quantity) }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="Stock Quantity" required>
+                                    @error('stock_quantity')
+                                    <div id="stock_quantity-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
