@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventory_transactions', function (Blueprint $table) {
+        Schema::create('imports', function (Blueprint $table) {
             $table->char('id', 36)->primary();
-            $table->char('product_id', 36);
-            $table->integer('quantity_change');
-            $table->char('reason', 191);
-            $table->dateTime('transaction_date');
+            $table->string('file_name');
+            $table->json('messages');
+            $table->unsignedTinyInteger('status')->default(1);
             $table->dateTimes();
-
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventory_transactions');
+        Schema::dropIfExists('imports');
     }
 };

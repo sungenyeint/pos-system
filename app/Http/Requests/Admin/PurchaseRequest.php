@@ -31,8 +31,10 @@ class PurchaseRequest extends BaseFormRequest
             ],
             'total_cost' => [
                 'required',
-                'decimal:0,2',
-                'max:9999999999.99',
+                'integer',
+                'min:1',
+                // 'decimal:0,2',
+                // 'max:9999999999.99',
             ],
             'purchase_date' => [
                 'required',

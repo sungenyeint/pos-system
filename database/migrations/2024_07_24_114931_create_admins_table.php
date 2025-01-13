@@ -13,10 +13,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('admins', function (Blueprint $table) {
-            $table->uuid('id')->primary()->comment('ID');
-            $table->string('name', length: 191)->comment('氏名');
-            $table->string('email', length: 191)->comment('Eメールアドレス');
-            $table->char('password', length: 60)->comment('パスワード');
+            $table->uuid('id')->primary();
+            $table->string('name', length: 191);
+            $table->string('email', length: 191);
+            $table->char('password', length: 60);
             $table->dateTimes();
         });
 

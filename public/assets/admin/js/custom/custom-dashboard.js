@@ -4,8 +4,8 @@
 ----------------------------------------------
 */
 "use strict";
-$(document).ready(function() {    
-    
+$(document).ready(function() {
+
     /* -----  Apex Line1 Chart ----- */
     var options = {
         chart: {
@@ -20,7 +20,7 @@ $(document).ready(function() {
         },
         colors: ['#1ba4fd'],
         series: [{
-            data: [50, 60, 40, 60, 67, 61, 62, 82, 103, 84, 54, 65]
+            data: Object.values(purchases)
         }],
         dataLabels: {
             enabled: false
@@ -43,15 +43,15 @@ $(document).ready(function() {
         },
         xaxis: {
             labels: {
-                show: false
+                show: true
             },
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             axisBorder: {
-                show: false, 
+                show: true,
                 color: 'transparent'
             },
             axisTicks: {
-                show: false, 
+                show: true,
                 color: 'transparent'
             }
         }
@@ -76,7 +76,7 @@ $(document).ready(function() {
         },
         colors: ['#3dcd8b'],
         series: [{
-            data: [50, 60, 40, 60, 67, 61, 62, 82, 103, 84, 54, 65]
+            data: Object.values(sales)
         }],
         dataLabels: {
             enabled: false
@@ -99,15 +99,15 @@ $(document).ready(function() {
         },
         xaxis: {
             labels: {
-                show: false
+                show: true
             },
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             axisBorder: {
-                show: false, 
+                show: false,
                 color: 'transparent'
             },
             axisTicks: {
-                show: false, 
+                show: false,
                 color: 'transparent'
             }
         }
@@ -159,11 +159,11 @@ $(document).ready(function() {
             },
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             axisBorder: {
-                show: false, 
+                show: false,
                 color: 'transparent'
             },
             axisTicks: {
-                show: false, 
+                show: false,
                 color: 'transparent'
             }
         }
@@ -262,13 +262,13 @@ $(document).ready(function() {
           show: true,
           width: 1,
           colors: ['#fff']
-        },  
+        },
         grid: {
             row: {
                 colors: ['transparent', 'transparent'], opacity: .2
             },
             borderColor: 'rgba(0,0,0,0.05)'
-        }, 
+        },
         legend: {
             show: false
         },
@@ -283,11 +283,11 @@ $(document).ready(function() {
         xaxis: {
             categories: [2001, 2002, 2003, 2004, 2005, 2006, 2007],
             axisBorder: {
-                show: true, 
+                show: true,
                 color: 'rgba(0,0,0,0.05)'
             },
             axisTicks: {
-                show: true, 
+                show: true,
                 color: 'rgba(0,0,0,0.05)'
             }
         }

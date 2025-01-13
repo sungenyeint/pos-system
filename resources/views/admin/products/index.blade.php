@@ -1,6 +1,8 @@
 @extends('admin.layouts.main')
 @section('title', 'Product Management')
 @section('widgetbar')
+<a class="btn btn-outline-primary" href="{{ route('admin.products.export') }}" target="_blank"><i class="ri-chat-download-line align-middle mr-2"></i>CSV Export</a>
+<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#import_csv"><i class="ri-chat-upload-line align-middle mr-2"></i>CSV Import</button>
 <a href="{{ route('admin.products.create') }}" class="btn btn-outline-primary"><i class="ri-add-line align-middle mr-2"></i>Add</a>
 @endsection
 @section('content')
@@ -109,4 +111,26 @@
     </div>
 </div>
 
+<div class="modal fade" id="import_csv" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CSV Import</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ route('admin.products.upload') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <input type="file" name="import_file" class="form-control-file" required accept=".csv, .txt">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit">Import</button>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection

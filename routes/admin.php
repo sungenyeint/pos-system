@@ -3,8 +3,10 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\Auth\LoginController;
+use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PurchaseController;
+use App\Http\Controllers\Admin\SaleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,10 +31,15 @@ Route::middleware('auth:admin')
     ->group(function () {
         Route::post('logout', [LoginController::class, 'logout'])->name('logout');
         Route::get('/', function () {
-            return redirect()->route('admin.admins.index');
-        })->name('index');
+            return redirect()->route('admin.home');
+        })->name('home');
+
+        Route::get('home', [HomeController::class, 'home'])->name('home');
         Route::resource('admins', AdminController::class)->except('show');
         Route::resource('categories', CategoryController::class)->except('show');
         Route::resource('products', ProductController::class)->except('show');
+        Route::post('products/upload', [ProductController::class, 'upload'])->name('products.upload');
+        Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
         Route::resource('purchases', PurchaseController::class)->except('show');
+        Route::resource('sales', SaleController::class)->except('show');
     });

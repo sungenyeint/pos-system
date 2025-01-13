@@ -22,6 +22,12 @@ class PurchaseController extends Controller
             $purchases->where('product_id', request('product_id'));
         }
 
+        if (request()->filled('purchase_month')) {
+            $from = Carbon::parse(request()->purchase_month . ' ' . now()->year)->startOfDay();
+            $to = Carbon::parse(request()->purchase_month . ' ' . now()->year)->endOfMonth()->endOfDay();
+            $purchases->whereBetween('purchase_date', [$from, $to]);
+        }
+
         $purchases = $purchases->paginate(config('const.default_paginate_number'));
 
         return view('admin.purchases.index', [
