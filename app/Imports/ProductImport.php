@@ -32,6 +32,7 @@ class ProductImport
 
         foreach ($file as $i => $line) {
             $this->row_num = $i + 1;
+            logger()->info('$line', $line);
 
             // ヘッダー行スキップ
             if ($i < 1) {
@@ -50,6 +51,8 @@ class ProductImport
                     throw new ArrayException(['代理店データが存在しません。']);
                 }
 
+                $product = Product::where('name', $line[0])->first();
+
                 // インポートデータをセット
                 $import_data = [
                     'category_id' => $category->id,
@@ -62,7 +65,7 @@ class ProductImport
                 logger()->info('$import_data', $import_data);
 
                 // バリデーション
-                $this->validation($import_data);
+                $this->validation($import_data, $product->id ?? null);
 
                 // データ保存
                 $this->storeImportDetail(true);
@@ -90,11 +93,11 @@ class ProductImport
         ]);
     }
 
-    private function validation(array $data)
+    private function validation(array $data, string $product_id = null)
     {
         $product_request = new ProductRequest();
-        // $rules = $product_request->rules($product_id);
-        $validator = Validator::make($data, [], [], $product_request->attributes());
+        $rules = $product_request->rules(product_id: $product_id);
+        $validator = Validator::make($data, $rules, [], $product_request->attributes());
 
         if ($validator->fails()) {
             throw new Exception(json_encode($validator->messages()->all()));

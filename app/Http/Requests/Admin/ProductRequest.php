@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\BaseFormRequest;
 use App\Models\Category;
+use Illuminate\Validation\Rule;
 
 class ProductRequest extends BaseFormRequest
 {
@@ -12,8 +13,11 @@ class ProductRequest extends BaseFormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(string $product_id = null): array
     {
+        if ($this->has('product_id')) {
+            $product_id = $this->product_id;
+        }
         return [
             'category_id' => [
                 'required',
@@ -27,6 +31,7 @@ class ProductRequest extends BaseFormRequest
             'name' => [
                 'required',
                 'max:' . config('const.default_text_maxlength'),
+                Rule::unique('products', 'name')->ignore($product_id),
             ],
             'unit_cost' => [
                 'required',
