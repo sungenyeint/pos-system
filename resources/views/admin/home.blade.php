@@ -14,20 +14,22 @@
                     <div class="card-body pb-0">
                         <div class="row align-items-center">
                             <div class="col-6">
-                                <h4>{{ $purchase_data ? number_format(max($purchase_data)) : '' }}</h4>
+                                <h4>{{ $purchase_data ? number_format($purchase_data[\Carbon\Carbon::now()->month]) : '' }}</h4>
                             </div>
                             <div class="col-6 text-right">
                                 @php
                                     $now_month = \Carbon\Carbon::now()->month + 1;
-                                    $current_month = isset($purchase_data[$now_month]) ? $purchase_data[$now_month] : 0;
-                                    $previous_month = isset($purchase_data[$now_month - 1]) ? $purchase_data[$now_month - 1] : 0;
+                                    $purchase_current_month = isset($purchase_data[$now_month]) ? $purchase_data[$now_month] : 0;
+                                    $purchase_previous_month = isset($purchase_data[$now_month - 1]) ? $purchase_data[$now_month - 1] : 0;
 
                                     $difference = 0;
-                                    if ($previous_month) {
-                                        $difference = ($current_month / $previous_month) * 100;
+                                    if ($purchase_previous_month && $purchase_current_month < $purchase_previous_month) {
+                                        $difference = ($purchase_current_month / $purchase_previous_month) * 100;
+                                    } else if ($purchase_current_month && $purchase_previous_month < $purchase_current_month) {
+                                        $difference = ($purchase_previous_month / $purchase_current_month) * 100;
                                     }
                                 @endphp
-                                <p class="mb-0"><i class="ri-arrow-right-up-line text-success align-middle font-18 mr-1"></i>{{ $difference }}%</p>
+                                <p class="mb-0"><i class="{{ ($purchase_current_month > $purchase_previous_month) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($difference) }}%</p>
                                 <p class="mb-0">This month</p>
                             </div>
                         </div>
@@ -45,11 +47,23 @@
                     <div class="card-body pb-0">
                         <div class="row align-items-center">
                             <div class="col-6">
-                                <h4>{{ $sale_data ? number_format(max($sale_data)) : '' }}</h4>
+                                <h4>{{ $sale_data ? number_format($sale_data[\Carbon\Carbon::now()->month]) : '' }}</h4>
                             </div>
                             <div class="col-6 text-right">
-                                <p class="mb-0"><i class="ri-arrow-right-down-line text-danger align-middle font-18 mr-1"></i>15%</p>
-                                <p class="mb-0">This week</p>
+                                @php
+                                    $now_month = \Carbon\Carbon::now()->month + 1;
+                                    $sale_current_month = isset($sale_data[$now_month]) ? $sale_data[$now_month] : 0;
+                                    $sale_previous_month = isset($sale_data[$now_month - 1]) ? $sale_data[$now_month - 1] : 0;
+
+                                    $difference = 0;
+                                    if ($sale_previous_month && $sale_current_month < $sale_previous_month) {
+                                        $difference = ($sale_current_month / $sale_previous_month) * 100;
+                                    } else if ($sale_current_month && $sale_previous_month < $sale_current_month) {
+                                        $difference = ($sale_previous_month / $sale_current_month) * 100;
+                                    }
+                                @endphp
+                                <p class="mb-0"><i class="{{ ($sale_current_month > $sale_previous_month) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($difference) }}%</p>
+                                <p class="mb-0">This month</p>
                             </div>
                         </div>
                         <div id="apex-line-chart2"></div>

@@ -30,6 +30,10 @@ class ProductController extends Controller
             $products->where('name', 'like', '%' . request('name') . '%');
         }
 
+        if (request()->filled('stock_quantity')) {
+            $products->where('stock_quantity', request('stock_quantity'));
+        }
+
         $products = $products->paginate(config('const.default_paginate_number'));
 
         return view('admin.products.index', [
@@ -128,7 +132,7 @@ class ProductController extends Controller
                     'file_name' => $import_file->getClientOriginalName(),
                     'status' => 1,
                 ]);
-                
+
                 $file_path = $import_file->storeAs(config('const.import_csv_file_path'), $import_file->getClientOriginalName());
 
                 // $file_path = Storage::putFileAs(config('const.import_csv_file_path'), $import_file, $import_file->getClientOriginalName());

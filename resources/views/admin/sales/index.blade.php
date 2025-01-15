@@ -21,6 +21,19 @@
                             <div class="row">
                                 <div class="col-3">
                                     <div class="form-group">
+                                        <label for="category_id">Category</label>
+                                        <select id="category_id" name="category_id" class="form-control">
+                                            <option value="">ရွေးချယ်ပါ</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}" @if (request()->category_id == $category->id) selected @endif>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
                                         <label for="product_id">Product</label>
                                         <select id="product_id" name="product_id" class="form-control">
                                             <option value="">ရွေးချယ်ပါ</option>
@@ -57,26 +70,32 @@
                 </div>
                 <div class="card-body">
 
-                    @forelse ($sales as $sale)
+                    @forelse ($sales as $key => $sale)
                         @if ($loop->first)
                         <div class="table-responsive m-b-30">
                             <table id="posts-table" class="table">
                                 <thead class="text-nowrap">
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Quantity</th>
-                                        <th>Total Price</th>
+                                        <th>No.</th>
+                                        <th>Category Name</th>
+                                        <th>Product Name</th>
                                         <th>Sale Date</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Profit</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                         @endif
                                     <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ Str::limit($sale->product->category->name, 20) }}</td>
                                         <td>{{ Str::limit($sale->product->name, 20) }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($sale->sale_date)->format('Y-m-d H:i') }}</td>
                                         <td>{{ $sale->quantity }}</td>
                                         <td>{{ number_format($sale->total_price) }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($sale->sale_date)->format('Y-m-d H:i') }}</td>
+                                        <td>{{ number_format($sale->profit) }}</td>
                                         <td>
                                             <form method="POST" class="form-destroy" action="{{ route('admin.sales.destroy', $sale->id) }}">
                                                 @csrf
@@ -91,6 +110,16 @@
                                         </td>
                                     </tr>
                         @if ($loop->last)
+                                    <tr class="table-info">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Total</td>
+                                        <td>{{ number_format($sales->sum('total_price')) }}</td>
+                                        <td>{{ number_format($sales->sum('profit')) }}</td>
+                                        <td></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

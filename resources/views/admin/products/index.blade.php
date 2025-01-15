@@ -20,9 +20,9 @@
                             <div class="row">
                                 <div class="col-3">
                                     <div class="form-group">
-                                        <label for="category_id">Category</label>
+                                        <label for="category_id">Category Name</label>
                                         <select id="category_id" name="category_id" class="form-control">
-                                            <option value="">選択してください。</option>
+                                            <option value="">ရွေးချယ်ပါ</option>
                                             @foreach ($categories as $category)
                                                 <option value="{{ $category->id }}" @if (request()->category_id == $category->id) selected @endif>
                                                     {{ $category->name }}
@@ -33,8 +33,14 @@
                                 </div>
                                 <div class="col-3">
                                     <div class="form-group">
-                                        <label for="name">Name</label>
-                                        <input type="text" id="name" name="name" class="form-control" value="{{ request()->name }}" placeholder="Name">
+                                        <label for="name">Product Name</label>
+                                        <input type="text" id="name" name="name" class="form-control" value="{{ request()->name }}" placeholder="Product Name">
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="name">Stock Quantity</label>
+                                        <input type="number" id="stock_quantity" name="stock_quantity" class="form-control" value="{{ request()->stock_quantity }}" min="0">
                                     </div>
                                 </div>
                             </div>
@@ -62,22 +68,24 @@
                             <table id="posts-table" class="table">
                                 <thead class="text-nowrap">
                                     <tr>
-                                        <th>Category</th>
-                                        <th>Name</th>
+                                        <th>No.</th>
+                                        <th>Category Name</th>
+                                        <th>Product Name</th>
+                                        <th>Stock Quantity</th>
                                         <th>Unit Cost</th>
                                         <th>Unit Price</th>
-                                        <th>Stock Quantity</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                         @endif
                                     <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ Str::limit($product->category->name, 20) }}</td>
                                         <td>{{ Str::limit($product->name, 20) }}</td>
+                                        <td>{{ $product->stock_quantity }}</td>
                                         <td>{{ number_format($product->unit_cost) }}</td>
                                         <td>{{ number_format($product->unit_price) }}</td>
-                                        <td>{{ $product->stock_quantity }}</td>
                                         <td>
                                             <form method="POST" class="form-destroy" action="{{ route('admin.products.destroy', $product->id) }}">
                                                 @csrf
@@ -92,6 +100,15 @@
                                         </td>
                                     </tr>
                         @if ($loop->last)
+                                    <tr class="table-info">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Total</td>
+                                        <td>{{ number_format($products->sum('unit_cost')) }}</td>
+                                        <td>{{ number_format($products->sum('unit_price')) }}</td>
+                                        <td></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

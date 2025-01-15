@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PurchaseRequest;
 use App\Http\Requests\Admin\SaleRequest;
+use App\Models\Category;
 use App\Models\InventoryTransaction;
 use App\Models\Product;
 use App\Models\Purchase;
@@ -18,8 +19,19 @@ class SaleController extends Controller
 {
     public function index()
     {
-        $sales = Sale::with('product')
+        $sales = Sale::with([
+                'product',
+                'product.category'
+            ])
+            ->selectRaw('sales.*, (products.unit_price - products.unit_cost) * sales.quantity as profit')
+            ->join('products', 'sales.product_id', '=', 'products.id')
             ->orderBy('updated_at', 'DESC');
+
+        if (request()->filled('category_id')) {
+            $sales->whereHas('product', function ($query) {
+                $query->where('category_id', request()->category_id);
+            });
+        }
 
         if (request()->filled('product_id')) {
             $sales->where('product_id', request('product_id'));
@@ -34,6 +46,7 @@ class SaleController extends Controller
         return view('admin.sales.index', [
             'sales' => $sales,
             'products' => Product::whereHas('sales')->get(),
+            'categories' => Category::whereHas('products.sales')->get(),
         ]);
     }
 

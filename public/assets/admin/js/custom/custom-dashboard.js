@@ -9,8 +9,8 @@ $(document).ready(function() {
     /* -----  Apex Line1 Chart ----- */
     var options = {
         chart: {
-            height: 150,
-            type: 'line',
+            height: 200,
+            type: 'bar',
             toolbar: {
                 show: false
             },
@@ -65,8 +65,8 @@ $(document).ready(function() {
     /* -----  Apex Line2 Chart ----- */
     var options = {
         chart: {
-            height: 150,
-            type: 'line',
+            height: 200,
+            type: 'bar',
             toolbar: {
                 show: false
             },
