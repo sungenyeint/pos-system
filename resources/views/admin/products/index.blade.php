@@ -40,7 +40,7 @@
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="name">Stock Quantity</label>
-                                        <input type="number" id="stock_quantity" name="stock_quantity" class="form-control" value="{{ request()->stock_quantity }}" min="0">
+                                        <input type="number" id="stock_quantity" name="stock_quantity" class="form-control" value="{{ request()->stock_quantity }}" min="0" placeholder="Stock Quantity">
                                     </div>
                                 </div>
                             </div>
@@ -61,12 +61,16 @@
                     <h5 class="card-title">product List</h5>
                 </div>
                 <div class="card-body">
-
+                    @php
+                        $total_sale_price = 0;
+                        $total_purchase_price = 0;
+                        $total_profit = 0;
+                    @endphp
                     @forelse ($products as $product)
                         @if ($loop->first)
                         <div class="table-responsive m-b-30">
-                            <table id="posts-table" class="table">
-                                <thead class="text-nowrap">
+                            <table id="posts-table" class="table table-striped">
+                                <thead class="text-nowrap thead-dark">
                                     <tr>
                                         <th>No.</th>
                                         <th>Category Name</th>
@@ -80,12 +84,17 @@
                                 <tbody>
                         @endif
                                     <tr>
+                                        @php
+                                            $total_sale_price += $product->unit_price * $product->stock_quantity;
+                                            $total_purchase_price += $product->unit_cost * $product->stock_quantity;
+                                            $total_profit += $total_sale_price - $total_purchase_price;
+                                        @endphp
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ Str::limit($product->category->name, 20) }}</td>
                                         <td>{{ Str::limit($product->name, 20) }}</td>
                                         <td>{{ $product->stock_quantity }}</td>
-                                        <td>{{ number_format($product->unit_cost) }}</td>
-                                        <td>{{ number_format($product->unit_price) }}</td>
+                                        <td>{{ number_format($product->unit_cost) }}ကျပ်</td>
+                                        <td>{{ number_format($product->unit_price) }}ကျပ်</td>
                                         <td>
                                             <form method="POST" class="form-destroy" action="{{ route('admin.products.destroy', $product->id) }}">
                                                 @csrf
@@ -100,14 +109,23 @@
                                         </td>
                                     </tr>
                         @if ($loop->last)
-                                    <tr class="table-info">
+                                    <tr class="table-primary" >
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td>Total</td>
-                                        <td>{{ number_format($products->sum('unit_cost')) }}</td>
-                                        <td>{{ number_format($products->sum('unit_price')) }}</td>
                                         <td></td>
+                                        <td>၀ယ်စျေး</td>
+                                        <td>ရောင်းစျေး</td>
+                                        <td>အမြတ်</td>
+                                    </tr>
+                                    <tr class="table-primary">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>စုစုပေါင်း</td>
+                                        <td>{{ number_format($total_purchase_price) }}ကျပ်</td>
+                                        <td>{{ number_format($total_sale_price) }}ကျပ်</td>
+                                        <td>{{ number_format($total_profit) }}ကျပ်</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -146,6 +164,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="submit">Import</button>
+                </div>
             </form>
         </div>
     </div>

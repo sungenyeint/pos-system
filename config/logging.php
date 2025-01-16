@@ -138,7 +138,13 @@ return [
             'permission' => 0666,
             'days' => 90
         ],
-
+        'send_stock_quantity' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/send_stock_quantity.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            // 'days' => 90,
+            'permission' => 0666,
+        ],
     ],
 
 ];

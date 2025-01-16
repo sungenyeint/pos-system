@@ -47,8 +47,21 @@
                                 </div>
                                 <div class="col-3">
                                     <div class="form-group">
-                                        <label for="sale_date">Sale Date</label>
+                                        <label for="sale_date">Sale By Date</label>
                                         <input type="text" name="sale_date" id="sale_date" class="form-control" value="{{ request()->sale_date ? \Carbon\Carbon::parse(request()->sale_date)->format('Y-m-d') : '' }}" placeholder="YYYY-MM-DD">
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="sale_month">Sale By Month</label>
+                                        <select id="sale_month" name="sale_month" class="form-control">
+                                            <option value="">ရွေးချယ်ပါ</option>
+                                            @for ($i = 1; $i <= 12; $i++)
+                                                <option value="{{ \Carbon\Carbon::create()->month($i)->format('F') }}" @if (request()->sale_month == \Carbon\Carbon::create()->month($i)->format('F')) selected @endif>
+                                                    {{ \Carbon\Carbon::create()->month($i)->format('F') }}
+                                                </option>
+                                            @endfor
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -73,8 +86,8 @@
                     @forelse ($sales as $key => $sale)
                         @if ($loop->first)
                         <div class="table-responsive m-b-30">
-                            <table id="posts-table" class="table">
-                                <thead class="text-nowrap">
+                            <table id="posts-table" class="table table-striped">
+                                <thead class="text-nowrap thead-dark">
                                     <tr>
                                         <th>No.</th>
                                         <th>Category Name</th>
@@ -94,8 +107,8 @@
                                         <td>{{ Str::limit($sale->product->name, 20) }}</td>
                                         <td>{{ \Carbon\Carbon::parse($sale->sale_date)->format('Y-m-d H:i') }}</td>
                                         <td>{{ $sale->quantity }}</td>
-                                        <td>{{ number_format($sale->total_price) }}</td>
-                                        <td>{{ number_format($sale->profit) }}</td>
+                                        <td>{{ number_format($sale->total_price) }}ကျပ်</td>
+                                        <td>{{ number_format($sale->profit) }}ကျပ်</td>
                                         <td>
                                             <form method="POST" class="form-destroy" action="{{ route('admin.sales.destroy', $sale->id) }}">
                                                 @csrf
@@ -110,14 +123,25 @@
                                         </td>
                                     </tr>
                         @if ($loop->last)
-                                    <tr class="table-info">
+                                    <tr class="table-primary">
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td>Total</td>
-                                        <td>{{ number_format($sales->sum('total_price')) }}</td>
-                                        <td>{{ number_format($sales->sum('profit')) }}</td>
+                                        <td></td>
+                                        <td>ရောင်းရငွေ</td>
+                                        <td>အမြတ်</td>
+                                        <td></td>
+                                    </tr>
+
+                                    <tr class="table-primary">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>စုစုပေါင်း</td>
+                                        <td>{{ number_format($sales->sum('total_price')) }}ကျပ်</td>
+                                        <td>{{ number_format($sales->sum('profit')) }}ကျပ်</td>
                                         <td></td>
                                     </tr>
                                 </tbody>
@@ -149,5 +173,7 @@
         dateFormat: 'yyyy-mm-dd',
         autoClose: true,
     });
+
+    $('#product_id').select2();
 </script>
 @endsection

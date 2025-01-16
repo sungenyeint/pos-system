@@ -20,7 +20,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with('category')
-            ->orderBy('updated_at', 'DESC');
+            ->orderBy('stock_quantity', 'ASC');
 
         if (request()->filled('category_id')) {
             $products->where('category_id', request('category_id'));
@@ -31,7 +31,7 @@ class ProductController extends Controller
         }
 
         if (request()->filled('stock_quantity')) {
-            $products->where('stock_quantity', request('stock_quantity'));
+            $products->where('stock_quantity', '<=' ,request('stock_quantity'));
         }
 
         $products = $products->paginate(config('const.default_paginate_number'));
@@ -125,27 +125,12 @@ class ProductController extends Controller
         }
 
         $import_file = $request->file('import_file');
+        $file_name = $import_file->getClientOriginalName();
 
-        try {
-            DB::transaction(function() use ($import_file) {
-                $import = Import::create([
-                    'file_name' => $import_file->getClientOriginalName(),
-                    'status' => 1,
-                ]);
+        $file_path = $import_file->storeAs(config('const.import_csv_file_path'), $file_name);
 
-                $file_path = $import_file->storeAs(config('const.import_csv_file_path'), $import_file->getClientOriginalName());
-
-                // $file_path = Storage::putFileAs(config('const.import_csv_file_path'), $import_file, $import_file->getClientOriginalName());
-
-                dispatch(new ExcelImportJob($import, $file_path))
-                    ->onQueue('excel_import');
-            });
-
-        } catch (Exception $e) {
-            logger()->error('$e', [$e->getCode(), $e->getMessage()]);
-            return back()
-                ->with('alert.error', 'CSV upload failed.');
-        }
+        dispatch(new ExcelImportJob($file_path))
+            ->onQueue('excel_import');
 
         return redirect()->route('admin.products.index')
             ->with('alert.success','CSV uploaded successfully.');
@@ -156,11 +141,11 @@ class ProductController extends Controller
     */
     public function export()
     {
-       $file_name = 'product_' . date('Ymd_His') . '.csv';
+        $file_name = 'product_' . date('Ymd_His') . '.csv';
 
         $callback = function()
         {
-            $csv = $csv = fopen('php://output', 'w');
+            $csv = fopen('php://output', 'w');
 
             fputcsv($csv, [
                 'category_name',
@@ -168,26 +153,34 @@ class ProductController extends Controller
                 'unit_cost',
                 'unit_price',
                 'stock_quantity',
+                'create_date'
             ]);
 
             Product::with('category')
-                ->orderBy('updated_at', 'DESC')
-                ->chunk(1000, function ($products) use ($csv) {
-                foreach ($products as $product) {
-                    fputcsv($csv, [
-                        $product->category->name,
-                        $product->name,
-                        $product->unit_cost,
-                        $product->unit_price,
-                        $product->stock_quantity,
-                    ]);
-                }
-            });
+                ->orderBy('stock_quantity')
+                ->get()
+                ->groupBy(function ($product) {
+                    return $product->category->name;
+                })
+                ->map(function ($products, $category_name) use ($csv) {
+                    foreach ($products as $product) {
+                        fputcsv($csv, [
+                            $category_name,
+                            $product->name,
+                            $product->unit_cost,
+                            $product->unit_price,
+                            $product->stock_quantity,
+                            $product->created_at,
+                        ]);
+                    }
+                });
+
             fclose($csv);
         };
 
         return response()->stream($callback, 200, [
             'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $file_name . '"',
         ]);
     }
 }

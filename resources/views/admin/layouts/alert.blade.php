@@ -32,7 +32,7 @@
 @endif
 @if (session('alert.warning'))
     <div class="alert alert-warning m-t-30 m-r-30 m-l-30" role="alert">
-        {{ session('alert.warning') }}
+        {!! session('alert.warning') !!}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>

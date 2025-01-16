@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('import_details', function (Blueprint $table) {
+        Schema::create('price_change_histories', function (Blueprint $table) {
             $table->char('id', 36)->primary();
-            $table->char('import_id', 36);
-            $table->unsignedMediumInteger('line_number');
-            $table->boolean('result')->default(0);
-            $table->text('messages')->nullable();
+            $table->char('product_id', 36);
+            $table->integer('price_change');
+            $table->char('status', 191);
+            $table->dateTime('change_date');
             $table->dateTimes();
 
-            $table->foreign('import_id')->references('id')->on('imports')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('import_details');
+        Schema::dropIfExists('price_change_histories');
     }
 };

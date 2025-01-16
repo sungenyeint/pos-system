@@ -24,7 +24,7 @@ class ProductRequest extends BaseFormRequest
                 function ($attribute, $value, $fail) {
                     $category = Category::find($value);
                     if (is_null($category)) {
-                        return $fail('選択された' . $attribute . 'は正しくありません。');
+                        return $fail('The selected ' . $attribute . ' is invalid.');
                     }
                 },
             ],
@@ -35,20 +35,22 @@ class ProductRequest extends BaseFormRequest
             ],
             'unit_cost' => [
                 'required',
+                'numeric',
                 'min:1',
-                // 'decimal:0,2',
-                // 'max:9999999999',
             ],
             'unit_price' => [
                 'required',
+                'numeric',
                 'min:1',
-                // 'decimal:0,2',
-                // 'max:9999999999',
+                function ($attribute, $value, $fail) {
+                    if ($value <= $this->unit_cost) {
+                        $fail("The $attribute must be greater than unit cost.");
+                    }
+                },
             ],
             'stock_quantity' => [
                 'required',
-                'integer',
-                // 'min:1',
+                'numeric',
             ]
         ];
     }

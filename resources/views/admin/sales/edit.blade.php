@@ -22,9 +22,9 @@
                                 <div class="form-group">
                                     <label for="product_id">Product<span class="required">*</span></label>
                                     <select id="product_id" name="product_id" class="form-control @error('product_id') is-invalid @enderror" required>
-                                        <option value="">選択してください。</option>
+                                        <option value="">ရွေးချယ်ပါ</option>
                                         @foreach ($products as $product)
-                                            <option data-price="{{ $product->unit_price }}" data-stock-quantity="{{ $product->stock_quantity }}" value="{{ $product->id }}" @if (old('product_id', $sale->product_id) == $product->id) selected @endif>
+                                            <option data-price="{{ $product->unit_price }}" data-cost="{{ $product->unit_cost }}" data-stock-quantity="{{ $product->stock_quantity }}" value="{{ $product->id }}" @if (old('product_id', $sale->product_id) == $product->id) selected @endif>
                                                 {{ $product->name }}
                                             </option>
                                         @endforeach
@@ -54,6 +54,17 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="profit" class="form-label">Profit</label>
+                                    <input type="number" id="profit" name="profit" class="form-control @error('profit') is-invalid @enderror" value="{{ old('profit', $sale->profit) }}" readonly placeholder="Profit">
+                                    @error('profit')
+                                    <div id="profit-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="sale_date" class="form-label">Sale Date<span class="required">*</span></label>
@@ -88,12 +99,18 @@
         autoClose: true,
     });
 
+    $('#product_id').select2();
+
+    const origin_stock_quantity = $('#product_id option:selected').attr('data-stock-quantity');
     $(() => {
-        $('#quantity').attr('max', $('#product_id option:selected').attr('data-stock-quantity'));
+        $('#quantity').attr('max', Number(origin_stock_quantity) + Number($('#quantity').val()));
+
+        const sale_price = $('#product_id option:selected').attr('data-price') * $('#quantity').val();
+        $('#profit').val(sale_price - ($('#product_id option:selected').attr('data-cost') * $('#quantity').val()));
     });
 
     $('#product_id').on('change', () => {
-        $('#quantity').attr('max', $('#product_id option:selected').attr('data-stock-quantity'));
+        $('#quantity').attr('max', Number(origin_stock_quantity) + Number($('#quantity').val()));
 
         calculateTotalCost();
     });
@@ -103,9 +120,13 @@
 
     const calculateTotalCost = () => {
         if ($('#product_id').val() && $('#quantity').val()) {
-            $('#total_price').val($('#product_id option:selected').attr('data-price') * $('#quantity').val());
+            const sale_price = $('#product_id option:selected').attr('data-price') * $('#quantity').val();
+
+            $('#total_price').val(sale_price);
+            $('#profit').val(sale_price - ($('#product_id option:selected').attr('data-cost') * $('#quantity').val()));
         } else {
             $('#total_price').val(null);
+            $('#profit').val(null);
         }
     };
 </script>

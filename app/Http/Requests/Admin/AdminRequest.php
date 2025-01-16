@@ -28,26 +28,10 @@ class AdminRequest extends BaseFormRequest
                 'regex:' . config('const.password_regex'),
                 function ($attribute, $value, $fail) {
                     if ($this->request->get('email') == $value) {
-                        return $fail('Eメールアドレスと一致しないようにしてください。');
+                        return $fail('ကျေးဇူးပြု၍ သင့်အီးမေးလ်လိပ်စာနှင့် မကိုက်ညီပါ။');
                     }
                 },
             ],
-        ];
-    }
-
-    public function attributes()
-    {
-        return [
-            'name' => '氏名',
-            'email' => 'Eメールアドレス',
-            'password' => 'パスワード',
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'password.regex' => '大文字・小文字を含めた半角英数字記号を、6文字以上60文字以内で入力してください。'
         ];
     }
 }

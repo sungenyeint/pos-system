@@ -1,29 +1,29 @@
 $(document).on('submit', '.form-store', function() {
-    if (!confirm('情報を登録してもよろしいですか？')) {
+    if (!confirm('သင့်အချက်အလက်များကို စာရင်းသွင်းလိုပါသလား။')) {
         return false;
     }
 });
 
 $(document).on('submit', '.form-update', function() {
-    if (!confirm('情報を更新してもよろしいですか？')) {
+    if (!confirm('သင့်အချက်အလက်များကို အပ်ဒိတ်လုပ်လိုပါသလား။')) {
         return false;
     }
 });
 
 $(document).on('submit', '.form-destroy', function() {
-    if (!confirm('削除してもよろしいですか？')) {
+    if (!confirm('၎င်းကို ဖျက်လိုသည်မှာ သေချာပါသလား။')) {
         return false;
     }
 });
 
 $(document).on('submit', '.form-logout', function() {
-    if (!confirm('ログアウトしますか？')) {
+    if (!confirm('ထွက်လိုသည်မှာ သေချာပါသလား။')) {
         return false;
     }
 });
 
 $(document).on('submit', '.form-cancel', function() {
-    if (!confirm('キャンセルしますか？')) {
+    if (!confirm('ပယ်ဖျက်လိုပါသလား။')) {
         return false;
     }
 });

@@ -8,7 +8,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
     <!-- Fevicon -->
-    <link rel="icon" href="{{ asset('assets/admin/images/favicon.ico') }}">
+    <link rel="icon" href="{{ asset('assets/admin/images/logo.png') }}">
+    <!-- Select2 css -->
+    <link href="{{ asset('assets/admin/plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css">
     <!-- Start css -->
     <link href="{{ asset('assets/admin/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/admin/css/flag-icon.min.css') }}" rel="stylesheet">
@@ -42,7 +44,7 @@
             <!-- Start Footerbar -->
             <div class="footerbar">
                 <footer class="footer">
-                    <p class="mb-0">© {{ date('Y') }} Minaati - All Rights Reserved.</p>
+                    <p class="mb-0">© {{ date('Y') }} Meepont - All Rights Reserved.</p>
                 </footer>
             </div>
             <!-- End Footerbar -->
@@ -55,6 +57,8 @@
     <script src="{{ asset('assets/admin/js/popper.min.js') }}"></script>
     <script src="{{ asset('assets/admin/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/admin/js/vertical-menu.js') }}"></script>
+    <!-- Select2 js -->
+    <script src="{{ asset('assets/admin/plugins/select2/select2.min.js') }}"></script>
     <!-- Core js -->
     <script src="{{ asset('assets/admin/js/core.js') }}"></script>
     <script src="{{ asset('assets/admin/js/admin.js') }}"></script>

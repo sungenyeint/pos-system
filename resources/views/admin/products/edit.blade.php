@@ -43,17 +43,17 @@
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label for="price" class="form-label">Price<span class="required">*</span></label>
-                                    <input type="number" id="price" name="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="price" required>
-                                    @error('price')
-                                    <div id="price-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
+                                    <label for="unit_cost" class="form-label">Unit Cost<span class="required">*</span></label>
+                                    <input type="number" id="unit_cost" name="unit_cost" class="form-control @error('unit_cost') is-invalid @enderror" value="{{ old('unit_cost', $product->unit_cost) }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="Unit Cost" required>
+                                    @error('unit_cost')
+                                    <div id="unit_cost-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="unit_price" class="form-label">Unit Price<span class="required">*</span></label>
-                                    <input type="number" id="unit_price" name="unit_price" class="form-control @error('unit_price') is-invalid @enderror" value="{{ old('unit_price', $product->unit_price) }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="Unit Price" required>
+                                    <input type="number" id="unit_price" name="unit_price" class="form-control @error('unit_price') is-invalid @enderror" value="{{ old('unit_price', $product->unit_price) }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="unit_price" required>
                                     @error('unit_price')
                                     <div id="unit_price-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
                                     @enderror

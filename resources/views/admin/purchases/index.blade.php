@@ -15,7 +15,20 @@
                     </div>
                     <div id="searchCollapse" class="collapse">
                         <div class="card-body">
-                        <div class="row">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="category_id">Category</label>
+                                        <select id="category_id" name="category_id" class="form-control">
+                                            <option value="">ရွေးချယ်ပါ</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}" @if (request()->category_id == $category->id) selected @endif>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label for="product_id">Product</label>
@@ -64,23 +77,25 @@
                     @forelse ($purchases as $purchase)
                         @if ($loop->first)
                         <div class="table-responsive m-b-30">
-                            <table id="posts-table" class="table">
-                                <thead class="text-nowrap">
+                            <table id="posts-table" class="table table-striped">
+                                <thead class="text-nowrap thead-dark">
                                     <tr>
+                                        <th>No.</th>
                                         <th>Product</th>
+                                        <th>Purchase Date</th>
                                         <th>Quantity</th>
                                         <th>Total Cost</th>
-                                        <th>Purchase Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                         @endif
                                     <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ Str::limit($purchase->product->name, 20) }}</td>
-                                        <td>{{ $purchase->quantity }}</td>
-                                        <td>{{ number_format($purchase->total_cost) }}</td>
                                         <td>{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('Y-m-d H:i') }}</td>
+                                        <td>{{ $purchase->quantity }}</td>
+                                        <td>{{ number_format($purchase->total_cost) }}ကျပ်</td>
                                         <td>
                                             <form method="POST" class="form-destroy" action="{{ route('admin.purchases.destroy', $purchase->id) }}">
                                                 @csrf
@@ -95,6 +110,14 @@
                                         </td>
                                     </tr>
                         @if ($loop->last)
+                                    <tr class="table-primary">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>စုစုပေါင်း</td>
+                                        <td>{{ number_format($purchases->sum('total_cost')) }}ကျပ်</td>
+                                        <td></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -114,4 +137,10 @@
     </div>
 </div>
 
+@endsection
+
+@section('js')
+<script>
+    $('#product_id').select2();
+</script>
 @endsection

@@ -12,17 +12,17 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductImport
 {
-    private $import_id;
+    private $file;
     private $row_num = 2;
 
-    public function __construct($import)
+    public function __construct($file)
     {
-        $this->import_id = $import->id;
+        $this->file = $file;
     }
 
-    public function import($file_name)
+    public function import()
     {
-        $file = new \SplFileObject(storage_path('app/' . $file_name));
+        $file = new \SplFileObject(storage_path('app/' . $this->file));
 
         $file->setFlags(
             \SplFileObject::READ_CSV |
@@ -34,14 +34,12 @@ class ProductImport
             $this->row_num = $i + 1;
             logger()->info('$line', $line);
 
-            // ヘッダー行スキップ
             if ($i < 1) {
                 continue;
             }
 
             logger()->info('Line info', [
                 'row_num' => $this->row_num,
-                'import_id' => $this->import_id,
             ]);
 
             try {
@@ -53,7 +51,6 @@ class ProductImport
 
                 $product = Product::where('name', $line[0])->first();
 
-                // インポートデータをセット
                 $import_data = [
                     'category_id' => $category->id,
                     'name' => $line[1],
@@ -64,33 +61,18 @@ class ProductImport
 
                 logger()->info('$import_data', $import_data);
 
-                // バリデーション
                 $this->validation($import_data, $product->id ?? null);
 
-                // データ保存
-                $this->storeImportDetail(true);
                 $product = Product::create($import_data);
                 logger()->info('Create $product', $product->toArray());
 
             } catch (ArrayException $ae) {
                 logger()->info('$ae', [$ae->getCode(), $ae->getMessages()]);
-                $this->storeImportDetail(false, $ae->getMessages());
 
             } catch (Exception $e) {
                 logger()->error('$e', [$e->getCode(), $e->getMessage()]);
-                $this->storeImportDetail(false, [$e->getMessage()]);
             }
         }
-    }
-
-    private function storeImportDetail(bool $result, array $messages = null)
-    {
-        return ImportDetail::create([
-            'import_id' => $this->import_id,
-            'line_number' => $this->row_num,
-            'result' => $result,
-            'messages' => $messages,
-        ]);
     }
 
     private function validation(array $data, string $product_id = null)

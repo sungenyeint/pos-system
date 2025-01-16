@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
-class Import extends Model
+class PriceChangeHistory extends Model
 {
     use HasUuid;
 
@@ -15,22 +15,18 @@ class Import extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'file_name',
+        'product_id',
+        'price_change',
         'status',
-        'messages',
-        'foreign_id',
+        'change_date',
     ];
 
     protected $casts = [
-        'messages' => 'array'
+        'change_date' => 'datetime:Y-m-d H:i',
     ];
 
-    protected $attributes = [
-        'messages' => '[]',
-    ];
-
-    public function import_details()
+    public function product()
     {
-        return $this->hasMany(ImportDetail::class);
+        return $this->belongsTo(Product::class);
     }
 }

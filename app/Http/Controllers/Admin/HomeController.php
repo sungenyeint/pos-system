@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
 use Carbon\Carbon;
@@ -14,12 +15,24 @@ class HomeController extends Controller
     {
         $currentYear = Carbon::now()->year;
 
-        $sale_data = Sale::selectRaw('MONTH(sale_date) as month, SUM(total_price) as total_price')
+        $sale_data = Sale::with(['product'])
             ->whereYear('sale_date', $currentYear)
-            ->groupBy(DB::raw('MONTH(sale_date)'))
+            ->orderBy('sale_date')
             ->get()
-            ->mapWithKeys(function ($item) {
-                return [$item['month'] => $item['total_price']];
+            ->groupBy(function ($sale) {
+                return Carbon::parse($sale['sale_date'])->format('n');
+            })
+            ->mapWithKeys(function ($items, $key) {
+                $data = [];
+                $data['total_price'] = 0;
+                $data['total_profit'] = 0;
+
+                foreach ($items as $item) {
+                    $data['product'][$item->quantity] = $item->product->name;
+                    $data['total_price'] += $item->total_price;
+                    $data['total_profit'] += ($item->product->unit_price - $item->product->unit_cost) * $item->quantity;
+                }
+                return [$key => $data];
             })
             ->toArray();
 
@@ -33,9 +46,15 @@ class HomeController extends Controller
             })
             ->toArray();
 
+        $products = Product::with('category')
+            ->where('stock_quantity', '<=', 2)
+            ->orderBy('stock_quantity', 'ASC')
+            ->get();
+
         return view('admin.home', [
             'sale_data' => $sale_data,
-            'purchase_data' => $purchase_data
+            'purchase_data' => $purchase_data,
+            'products' => $products,
         ]);
     }
 }

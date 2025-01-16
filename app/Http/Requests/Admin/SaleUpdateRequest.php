@@ -5,7 +5,7 @@ namespace App\Http\Requests\Admin;
 use App\Http\Requests\BaseFormRequest;
 use App\Models\Product;
 
-class SaleRequest extends BaseFormRequest
+class SaleUpdateRequest extends BaseFormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -15,31 +15,29 @@ class SaleRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'sale_date' => [
-                'required',
-                'date_format:Y-m-d H:i',
-            ],
-            'sales.*.product_id' => [
+            'product_id' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     $product = Product::find($value);
                     if ($product === null) {
-                        return $fail('選択された' . $attribute . 'は正しくありません。');
+                        return $fail('The selected ' . $attribute . ' is invalid.');
                     }
                 },
             ],
-            'sales.*.quantity' => [
+            'quantity' => [
                 'required',
-                'integer',
+                'numeric',
                 'min:1',
             ],
-            'sales.*.total_price' => [
+            'total_price' => [
                 'required',
-                'integer',
+                'numeric',
                 'min:1',
-                // 'decimal:0,2',
-                // 'max:9999999999.99',
             ],
+            'sale_date' => [
+                'required',
+                'date_format:Y-m-d H:i',
+            ]
         ];
     }
 }

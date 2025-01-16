@@ -42,29 +42,35 @@
 
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label for="sales_$count_product_id">Product<span class="required">*</span></label>
                                                 <select id="sales_$count_product_id" class="form-control product_id" name="sales[$count][product_id]" disabled required>
-                                                    <option value="">選択してください。</option>
+                                                    <option value="">ရွေးချယ်ပါ</option>
                                                     @foreach ($products as $product)
-                                                    <option data-price="{{ $product->unit_price }}" data-stock-quantity="{{ $product->stock_quantity }}" value="{{ $product->id }}">
+                                                    <option data-price="{{ $product->unit_price }}" data-cost="{{ $product->unit_cost }}" data-stock-quantity="{{ $product->stock_quantity }}" value="{{ $product->id }}">
                                                         {{ $product->name }}
                                                     </option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label for="sales _$count_quantity" class="form-label">Quantity<span class="required">*</span></label>
                                                 <input type="number" min="1" id="sales _$count_quantity" class="quantity form-control" name="sales[$count][quantity]" placeholder="Quantity" disabled required>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label for="sales_$count_total_price" class="form-label">Total Price<span class="required">*</span></label>
                                                 <input type="number" min="1" id="sales_$count_total_price" class="total_price form-control" name="sales[$count][total_price]" placeholder="Total Price" disabled required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label for="sales_$count_profit" class="form-label">Profit</label>
+                                                <input type="number" id="sales_$count_profit" class="profit form-control" name="sales[$count][profit]" placeholder="Profit" disabled readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -79,13 +85,13 @@
 
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label for="sales_{{ $loop->index }}_product_id">Product<span class="required">*</span></label>
                                                 <select id="sales_{{ $loop->index }}_product_id" name="sales[{{ $loop->index }}]['product_id']" class="product_id form-control @error('sales_' . $loop->index . '_product_id') is-invalid @enderror" required>
-                                                    <option value="">選択してください。</option>
+                                                    <option value="">ရွေးချယ်ပါ</option>
                                                     @foreach ($products as $product)
-                                                    <option data-price="{{ $product->unit_price }}" data-stock-quantity="{{ $product->stock_quantity }}" value="{{ $product->id }}" @if ($old->product_id == $product->id) selected @endif>
+                                                    <option data-price="{{ $product->unit_price }}" data-cost="{{ $product->unit_cost }}" data-stock-quantity="{{ $product->stock_quantity }}" value="{{ $product->id }}" @if ($old->product_id == $product->id) selected @endif>
                                                         {{ $product->name }}
                                                     </option>
                                                     @endforeach
@@ -95,7 +101,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label for="sales_{{ $loop->index }}_quantity" class="form-label">Quantity<span class="required">*</span></label>
                                                 <input type="number" min="1" id="sales_{{ $loop->index }}_quantity" name="sale[{{ $loop->index }}]['quantity']" class="quantity form-control @error('sales_' . $loop->index . '_quantity') is-invalid @enderror" value="{{ $old->quantity }}" placeholder="Quantity" required>
@@ -104,14 +110,21 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-3">
                                             <div class="form-group">
                                                 <label for="sales_{{ $loop->index }}_total_price" class="form-label">Total Price<span class="required">*</span></label>
                                                 <input type="number" min="1" id="sales_{{ $loop->index }}_total_price" name="sale[{{ $loop->index }}]['total_price']" class="total_price form-control @error('sales_' . $loop->index . '_total_price') is-invalid @enderror" value="{{ $old->total_price }}" placeholder="Total Price" required>
                                                 @error('sales_' . $loop->index . '_total_price')
                                                 <div id="sales_{{ $loop->index }}_total_price-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label for="sales_{{ $loop->index }}_profit" class="form-label">Profit</label>
+                                                <input type="number" id="sales_{{ $loop->index }}_profit" name="sale[{{ $loop->index }}]['profit']" class="profit form-control @error('sales_' . $loop->index . '_profit') is-invalid @enderror" value="{{ $old->profit }}" placeholder="Profit" readonly>
+                                                @error('sales_' . $loop->index . '_profit')
+                                                <div id="sales_{{ $loop->index }}_profit-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
@@ -161,7 +174,10 @@
 
         const replace = clone.prop('outerHTML').replace(/\$count/g, count);
         const node = $.parseHTML(replace);
+        $(node).find('span.select2').remove();
         $(node).appendTo('.sales');
+
+        $('.sale:last').find('select.product_id').select2();
 
         count++;
     }
@@ -169,6 +185,8 @@
     const isInit = {{ json_encode(old('_token', null) === null) }};
     if (isInit) {
         addSale();
+    } else {
+        $('.product_id').select2();
     }
 
     $('.add_sale').on('click', () => {
@@ -196,9 +214,13 @@
         let target = $(e.currentTarget).closest('.sale');
 
         if (target.find('.product_id').val() && target.find('.quantity').val()) {
-            target.find('.total_price').val(target.find('.product_id option:selected').attr('data-price') * target.find('.quantity').val());
+            const sale_price = target.find('.product_id option:selected').attr('data-price') * target.find('.quantity').val();
+            target.find('.total_price').val(sale_price);
+
+            target.find('.profit').val(sale_price - (target.find('.product_id option:selected').attr('data-cost') * target.find('.quantity').val()));
         } else {
             target.find('.total_price').val(null);
+            target.find('.profit').val(null);
         }
     };
 </script>
