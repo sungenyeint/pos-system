@@ -130,6 +130,21 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'excel_import' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/excel_import.log'),
+            'tap' => [App\Logging\CustomizeFormatter::class],
+            'level' => env('LOG_LEVEL', 'debug'),
+            'permission' => 0666,
+            'days' => 90
+        ],
+        'send_stock_quantity' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/send_stock_quantity.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            // 'days' => 90,
+            'permission' => 0666,
+        ],
     ],
 
 ];

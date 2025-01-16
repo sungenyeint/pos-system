@@ -1,5 +1,5 @@
 @extends('admin.layouts.main')
-@section('title', 'Purchase Management | Create')
+@section('title', 'Purchase Management | Update')
 @section('styles')
     <link href="{{ asset('/assets/admin/plugins/datepicker/datepicker.min.css') }}" rel="stylesheet">
 @endsection
@@ -24,7 +24,7 @@
                                     <select id="product_id" name="product_id" class="form-control @error('product_id') is-invalid @enderror" required>
                                         <option value="">選択してください。</option>
                                         @foreach ($products as $product)
-                                            <option value="{{ $product->id }}" @if (old('product_id', $purchase->product_id) == $product->id) selected @endif>
+                                            <option data-cost="{{ $product->unit_cost }}" value="{{ $product->id }}" @if (old('product_id', $purchase->product_id) == $product->id) selected @endif>
                                                 {{ $product->name }}
                                             </option>
                                         @endforeach
@@ -57,7 +57,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="purchase_date" class="form-label">Purchase Date<span class="required">*</span></label>
-                                    <input type="date" id="purchase_date" name="purchase_date" class="form-control @error('purchase_date') is-invalid @enderror" value="{{ \Carbon\Carbon::parse(old('purchase_date', $purchase->purchase_date))->format('Y-m-d H:i') }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="YYYY-MM-DD HH:ii" required>
+                                    <input type="text" id="purchase_date" name="purchase_date" class="form-control @error('purchase_date') is-invalid @enderror" value="{{ \Carbon\Carbon::parse(old('purchase_date', $purchase->purchase_date))->format('Y-m-d H:i') }}" maxlength="{{ config('const.default_text_maxlength') }}" placeholder="YYYY-MM-DD HH:ii" required>
                                     @error('purchase_date')
                                     <div id="purchase_date-error" class="invalid-feedback animated fadeInDown">{{ $message }}</div>
                                     @enderror
@@ -82,6 +82,7 @@
 <script>
     $('#purchase_date').datepicker({
         language: 'en',
+        dateFormat: 'yyyy-mm-dd',
         timeFormat: 'hh:ii',
         timepicker: true,
         autoClose: true,

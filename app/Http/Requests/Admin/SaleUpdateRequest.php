@@ -5,7 +5,7 @@ namespace App\Http\Requests\Admin;
 use App\Http\Requests\BaseFormRequest;
 use App\Models\Product;
 
-class PurchaseRequest extends BaseFormRequest
+class SaleUpdateRequest extends BaseFormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -20,21 +20,21 @@ class PurchaseRequest extends BaseFormRequest
                 function ($attribute, $value, $fail) {
                     $product = Product::find($value);
                     if ($product === null) {
-                        return $fail('選択された' . $attribute . 'は正しくありません。');
+                        return $fail('The selected ' . $attribute . ' is invalid.');
                     }
                 },
             ],
             'quantity' => [
                 'required',
-                'integer',
+                'numeric',
                 'min:1',
             ],
-            'total_cost' => [
+            'total_price' => [
                 'required',
-                'decimal:0,2',
-                'max:9999999999.99',
+                'numeric',
+                'min:1',
             ],
-            'purchase_date' => [
+            'sale_date' => [
                 'required',
                 'date_format:Y-m-d H:i',
             ]

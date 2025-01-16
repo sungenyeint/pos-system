@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
-class InventoryTransaction extends Model
+class Sale extends Model
 {
     use HasUuid;
 
@@ -16,17 +16,18 @@ class InventoryTransaction extends Model
 
     protected $fillable = [
         'product_id',
-        'quantity_change',
-        'reason',
-        'transaction_date',
+        'quantity',
+        'total_price',
+        'sale_date',
     ];
 
     protected $casts = [
-        'transaction_date' => 'datetime:Y-m-d H:i',
+        'sale_date' => 'datetime:Y-m-d H:i',
     ];
 
     public function product()
     {
         return $this->belongsTo(Product::class);
     }
+
 }

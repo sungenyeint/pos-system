@@ -1,6 +1,8 @@
 @extends('admin.layouts.main')
 @section('title', 'Product Management')
 @section('widgetbar')
+<a class="btn btn-outline-primary" href="{{ route('admin.products.export') }}" target="_blank"><i class="ri-chat-download-line align-middle mr-2"></i>CSV Export</a>
+<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#import_csv"><i class="ri-chat-upload-line align-middle mr-2"></i>CSV Import</button>
 <a href="{{ route('admin.products.create') }}" class="btn btn-outline-primary"><i class="ri-add-line align-middle mr-2"></i>Add</a>
 @endsection
 @section('content')
@@ -18,9 +20,9 @@
                             <div class="row">
                                 <div class="col-3">
                                     <div class="form-group">
-                                        <label for="category_id">Category</label>
+                                        <label for="category_id">Category Name</label>
                                         <select id="category_id" name="category_id" class="form-control">
-                                            <option value="">選択してください。</option>
+                                            <option value="">ရွေးချယ်ပါ</option>
                                             @foreach ($categories as $category)
                                                 <option value="{{ $category->id }}" @if (request()->category_id == $category->id) selected @endif>
                                                     {{ $category->name }}
@@ -31,8 +33,14 @@
                                 </div>
                                 <div class="col-3">
                                     <div class="form-group">
-                                        <label for="name">Name</label>
-                                        <input type="text" id="name" name="name" class="form-control" value="{{ request()->name }}" placeholder="Name">
+                                        <label for="name">Product Name</label>
+                                        <input type="text" id="name" name="name" class="form-control" value="{{ request()->name }}" placeholder="Product Name">
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="name">Stock Quantity</label>
+                                        <input type="number" id="stock_quantity" name="stock_quantity" class="form-control" value="{{ request()->stock_quantity }}" min="0" placeholder="Stock Quantity">
                                     </div>
                                 </div>
                             </div>
@@ -53,29 +61,39 @@
                     <h5 class="card-title">product List</h5>
                 </div>
                 <div class="card-body">
-
+                    @php
+                        $total_sale_price = 0;
+                        $total_purchase_price = 0;
+                        $total_profit = 0;
+                    @endphp
                     @forelse ($products as $product)
                         @if ($loop->first)
                         <div class="table-responsive m-b-30">
-                            <table id="posts-table" class="table">
-                                <thead class="text-nowrap">
+                            <table id="posts-table" class="table table-striped">
+                                <thead class="text-nowrap thead-dark">
                                     <tr>
-                                        <th>Category</th>
-                                        <th>Name</th>
+                                        <th>No.</th>
+                                        <th>Category Name</th>
+                                        <th>Product Name</th>
+                                        <th>Stock Quantity</th>
                                         <th>Unit Cost</th>
                                         <th>Unit Price</th>
-                                        <th>Stock Quantity</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                         @endif
                                     <tr>
+                                        @php
+                                            $total_sale_price += $product->unit_price * $product->stock_quantity;
+                                            $total_purchase_price += $product->unit_cost * $product->stock_quantity;
+                                        @endphp
+                                        <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ Str::limit($product->category->name, 20) }}</td>
                                         <td>{{ Str::limit($product->name, 20) }}</td>
-                                        <td>{{ number_format($product->unit_cost) }}</td>
-                                        <td>{{ number_format($product->unit_price) }}</td>
                                         <td>{{ $product->stock_quantity }}</td>
+                                        <td>{{ number_format($product->unit_cost) }}ကျပ်</td>
+                                        <td>{{ number_format($product->unit_price) }}ကျပ်</td>
                                         <td>
                                             <form method="POST" class="form-destroy" action="{{ route('admin.products.destroy', $product->id) }}">
                                                 @csrf
@@ -90,6 +108,24 @@
                                         </td>
                                     </tr>
                         @if ($loop->last)
+                                    <tr class="table-primary" >
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>၀ယ်စျေး</td>
+                                        <td>ရောင်းစျေး</td>
+                                        <td>အမြတ်</td>
+                                    </tr>
+                                    <tr class="table-primary">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>စုစုပေါင်း</td>
+                                        <td>{{ number_format($total_purchase_price) }}ကျပ်</td>
+                                        <td>{{ number_format($total_sale_price) }}ကျပ်</td>
+                                        <td>{{ number_format($total_sale_price - $total_purchase_price) }}ကျပ်</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -109,4 +145,27 @@
     </div>
 </div>
 
+<div class="modal fade" id="import_csv" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CSV Import</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ route('admin.products.upload') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <input type="file" name="import_file" class="form-control-file" required accept=".csv, .txt">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection

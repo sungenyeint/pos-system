@@ -77,7 +77,7 @@ return [
 
     'redirects' => [
         'login' => [
-            'admin' => 'admin/admins',
+            'admin' => 'admin/home',
         ],
         'logout' => [
             'admin' => 'admin/login',

@@ -50,8 +50,8 @@
                     @forelse ($admins as $admin)
                         @if ($loop->first)
                         <div class="table-responsive m-b-30">
-                            <table id="posts-table" class="table">
-                                <thead class="text-nowrap">
+                            <table id="posts-table" class="table table-striped">
+                                <thead class="text-nowrap thead-dark">
                                     <tr>
                                         <th>Name</th>
                                         <th>Email</th>

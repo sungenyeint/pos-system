@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\PurchaseRequest;
-use App\Models\InventoryTransaction;
+use App\Http\Requests\Admin\PurchaseStoreRequest;
+use App\Http\Requests\Admin\PurchaseUpdateRequest;
+use App\Models\Category;
+use App\Models\PriceChangeHistory;
 use App\Models\Product;
 use App\Models\Purchase;
 use Carbon\Carbon;
@@ -16,10 +18,16 @@ class PurchaseController extends Controller
     public function index()
     {
         $purchases = Purchase::with('product')
-            ->orderBy('updated_at', 'DESC');
+            ->orderBy('purchase_date', 'DESC');
 
         if (request()->filled('product_id')) {
             $purchases->where('product_id', request('product_id'));
+        }
+
+        if (request()->filled('purchase_month')) {
+            $from = Carbon::parse(request()->purchase_month . ' ' . now()->year)->startOfDay();
+            $to = Carbon::parse(request()->purchase_month . ' ' . now()->year)->endOfMonth()->endOfDay();
+            $purchases->whereBetween('purchase_date', [$from, $to]);
         }
 
         $purchases = $purchases->paginate(config('const.default_paginate_number'));
@@ -27,6 +35,7 @@ class PurchaseController extends Controller
         return view('admin.purchases.index', [
             'purchases' => $purchases,
             'products' => Product::whereHas('purchases')->get(),
+            'categories' => Category::whereHas('products.purchases')->get(),
         ]);
     }
 
@@ -37,27 +46,35 @@ class PurchaseController extends Controller
         ]);
     }
 
-    public function store(PurchaseRequest $request)
+    public function store(PurchaseStoreRequest $request)
     {
         try {
             DB::transaction(function() use ($request) {
-                $purchase = Purchase::create($request->all());
+                foreach ($request->purchases as $purchase) {
+                    $purchase['purchase_date'] = $request->purchase_date;
+                    Purchase::create($purchase);
 
-                // Update the stock_quantity in the products table
-                $product = Product::find($request->product_id);
-                $stock_quantity = $product->stock_quantity + $request->quantity;
+                    // Update the stock_quantity in the products table
+                    $product = Product::find($purchase['product_id']);
+                    $stock_quantity = $product->stock_quantity + $purchase['quantity'];
 
-                $product->fill([
-                    'stock_quantity' => $stock_quantity,
-                ])->save();
+                    $update_data['stock_quantity'] = $stock_quantity;
 
-                // Record the transaction in inventory_transactions
-                InventoryTransaction::create([
-                    'product_id' => $request->product_id,
-                    'quantity_change' => $stock_quantity,
-                    'reason' => 'purchase',
-                    'transaction_date' => Carbon::now(),
-                ]);
+                    if ($product->unit_cost != $purchase['total_cost'] / $purchase['quantity']) {
+                        $update_data['unit_cost'] = $purchase['total_cost'] / $purchase['quantity'];
+
+                        // add price_change_history table
+                        PriceChangeHistory::create([
+                            'product_id' => $purchase['product_id'],
+                            'price_change' => ($purchase['total_cost'] / $purchase['quantity']) - $product->unit_cost,
+                            'status' => 'purchase',
+                            'change_date' => Carbon::now(),
+                        ]);
+                    }
+
+                    $product->fill($update_data)->save();
+
+                }
             });
         } catch (Exception $e) {
             logger()->error('$e->getMessage()', [$e->getMessage()]);
@@ -66,7 +83,7 @@ class PurchaseController extends Controller
                 ->with('alert.error', 'Failed to create purchase. ');
         }
         return redirect()->route('admin.purchases.index')
-            ->with('success', 'purchase created successfully.');
+            ->with('alert.success', 'purchase created successfully.');
     }
 
     public function show(Purchase $purchase)
@@ -84,7 +101,7 @@ class PurchaseController extends Controller
         ]);
     }
 
-    public function update(PurchaseRequest $request, Purchase $purchase)
+    public function update(PurchaseUpdateRequest $request, Purchase $purchase)
     {
         try {
             DB::transaction(function() use ($purchase, $request) {
@@ -95,17 +112,21 @@ class PurchaseController extends Controller
                 $product = Product::find($request->product_id);
                 $stock_quantity = $product->stock_quantity - $before_quantity + $request->quantity;
 
-                $product->fill([
-                    'stock_quantity' => $stock_quantity,
-                ])->save();
+                $update_data['stock_quantity'] = $stock_quantity;
 
-                // Record the transaction in inventory_transactions
-                // InvendoryTransaction::create([
-                //     'product_id' => $request->product_id,
-                //     'quantity_change' => $stock_quantity,
-                //     'reason' => 'purchase',
-                //     'purchase_date' => Carbon::now(),
-                // ]);
+                if ($product->unit_cost != $purchase['total_cost'] / $purchase['quantity']) {
+                    $update_data['unit_cost'] = $purchase['total_cost'] / $purchase['quantity'];
+
+                    // add price_change_history table
+                    PriceChangeHistory::create([
+                        'product_id' => $purchase['product_id'],
+                        'price_change' => ($purchase['total_cost'] / $purchase['quantity']) - $product->unit_cost,
+                        'status' => 'purchase',
+                        'change_date' => Carbon::now(),
+                    ]);
+                }
+
+                $product->fill($update_data)->save();
             });
         } catch (Exception $e) {
             return back()
@@ -114,7 +135,7 @@ class PurchaseController extends Controller
         }
 
         return redirect()->route('admin.purchases.index')
-            ->with('success', 'Product purchase successfully.');
+            ->with('alert.success', 'Product purchase successfully.');
     }
 
     public function destroy(Purchase $purchase)
@@ -130,6 +151,6 @@ class PurchaseController extends Controller
                 ->with('alert.error', 'Failed to update purchase. ');
         }
         return redirect()->route('admin.purchases.index')
-            ->with('success', 'purchase deleted successfully.');
+            ->with('alert.success', 'purchase deleted successfully.');
     }
 }

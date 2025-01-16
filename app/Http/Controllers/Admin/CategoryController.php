@@ -42,7 +42,7 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('admin.categories.index')
-            ->with('alert.success', 'I created an category.');
+            ->with('alert.success', 'Category created successfully.');
     }
 
     /**
@@ -64,7 +64,7 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('admin.categories.index')
-            ->with('alert.success', 'Updated the category.');
+            ->with('alert.success', 'Category updated successfully.');
     }
 
     /**
@@ -73,6 +73,6 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
-        return back()->with('alert.success', 'The category has been deleted.');
+        return back()->with('alert.success', 'Category deleted successfully.');
     }
 }

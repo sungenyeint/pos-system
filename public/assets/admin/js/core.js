@@ -21,7 +21,7 @@ $(document).ready(function() {
         e.preventDefault();
         $(".infobar-settings-sidebar-overlay").css({"background": "rgba(0,0,0,0.4)", "position": "fixed"});
         $("#infobar-settings-sidebar").addClass("sidebarshow");
-    }); 
+    });
     $("#infobar-settings-close").on("click", function(e) {
         e.preventDefault();
         $(".infobar-settings-sidebar-overlay").css({"background": "transparent", "position": "initial"});
@@ -33,11 +33,11 @@ $(document).ready(function() {
         $("body").toggleClass("toggle-menu");
         $(".menu-hamburger i").toggle();
     });
-    /* -- Menu Topbar Hamburger -- */    
+    /* -- Menu Topbar Hamburger -- */
     $(".topbar-toggle-hamburger").on("click", function(e) {
         e.preventDefault();
         $("body").toggleClass("topbar-toggle-menu");
-        $(".topbar-toggle-hamburger i").toggle();    
+        $(".topbar-toggle-hamburger i").toggle();
     });
     /* -- Menu Scrollbar -- */
     /*$('.vertical-menu').slimscroll({
@@ -47,17 +47,18 @@ $(document).ready(function() {
         color: '#CFD8DC',
     });*/
     /* -- Media Size -- */
-    function mediaSize() { 
+    function mediaSize() {
         if (window.matchMedia('(max-width: 767px)').matches) {
             $("body").removeClass("toggle-menu");
             $(".menu-hamburger i.menu-hamburger-close").hide();
-            $(".menu-hamburger i.menu-hamburger-collapse").show();         
+            $(".menu-hamburger i.menu-hamburger-collapse").show();
         }
     };
     mediaSize();
     window.addEventListener('resize', mediaSize, false);
-{{--
+
     /* -- Switchery -- */
+    /*
     var setting_first = document.querySelector('.js-switch-setting-first');
     var switchery = new Switchery(setting_first, { color: '#1ba4fd', size: 'small' });
     var setting_second = document.querySelector('.js-switch-setting-second');
@@ -74,7 +75,8 @@ $(document).ready(function() {
     var switchery = new Switchery(setting_seventh, { color: '#1ba4fd', size: 'small' });
     var setting_eightth = document.querySelector('.js-switch-setting-eightth');
     var switchery = new Switchery(setting_eightth, { color: '#1ba4fd', size: 'small' });
---}}
+    */
+
     /* -- Bootstrap Popover -- */
     $('[data-toggle="popover"]').popover();
     /* -- Bootstrap Tooltip -- */
