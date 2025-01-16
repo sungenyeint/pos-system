@@ -19,17 +19,14 @@
                             <div class="col-6 text-right">
                                 @php
                                     $now_month = \Carbon\Carbon::now()->month + 1;
-                                    $purchase_current_month = isset($purchase_data[$now_month]) ? $purchase_data[$now_month] : 0;
-                                    $purchase_previous_month = isset($purchase_data[$now_month - 1]) ? $purchase_data[$now_month - 1] : 0;
+                                    $current_month_price = isset($purchase_data[$now_month]) ? $purchase_data[$now_month] : 0;
+                                    $previous_month_price = isset($purchase_data[$now_month - 1]) ? $purchase_data[$now_month - 1] : 0;
 
-                                    $difference = 0;
-                                    if ($purchase_previous_month && $purchase_current_month < $purchase_previous_month) {
-                                        $difference = ($purchase_current_month / $purchase_previous_month) * 100;
-                                    } else if ($purchase_current_month && $purchase_previous_month < $purchase_current_month) {
-                                        $difference = ($purchase_previous_month / $purchase_current_month) * 100;
-                                    }
+                                    // Calculate percentage difference
+                                    $difference = abs($current_month_price - $previous_month_price);
+                                    $percent_difference = ($difference / $previous_month_price) * 100;
                                 @endphp
-                                <p class="mb-0"><i class="{{ ($purchase_current_month > $purchase_previous_month) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($difference) }}%</p>
+                                <p class="mb-0"><i class="{{ ($current_month_price > $previous_month_price) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($percent_difference) }}%</p>
                                 <p class="mb-0">ယခုလ</p>
                             </div>
                         </div>
@@ -52,17 +49,14 @@
                             <div class="col-6 text-right">
                                 @php
                                     $now_month = \Carbon\Carbon::now()->month + 1;
-                                    $sale_current_month = isset($sale_data[$now_month]['total_price']) ? $sale_data[$now_month]['total_price'] : 0;
-                                    $sale_previous_month = isset($sale_data[$now_month - 1]['total_price']) ? $sale_data[$now_month - 1]['total_price'] : 0;
+                                    $current_month_price = isset($sale_data[$now_month]['total_price']) ? $sale_data[$now_month]['total_price'] : 0;
+                                    $previous_month_price = isset($sale_data[$now_month - 1]['total_price']) ? $sale_data[$now_month - 1]['total_price'] : 0;
 
-                                    $difference = 0;
-                                    if ($sale_previous_month && $sale_current_month < $sale_previous_month) {
-                                        $difference = ($sale_current_month / $sale_previous_month) * 100;
-                                    } else if ($sale_current_month && $sale_previous_month < $sale_current_month) {
-                                        $difference = ($sale_previous_month / $sale_current_month) * 100;
-                                    }
+                                    // Calculate percentage difference
+                                    $difference = abs($current_month_price - $previous_month_price);
+                                    $percent_difference = ($difference / $previous_month_price) * 100;
                                 @endphp
-                                <p class="mb-0"><i class="{{ ($sale_current_month > $sale_previous_month) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($difference) }}%</p>
+                                <p class="mb-0"><i class="{{ ($current_month_price > $previous_month_price) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($percent_difference) }}%</p>
                                 <p class="mb-0">ယခုလ</p>
                             </div>
                         </div>
@@ -85,17 +79,14 @@
                             <div class="col-6 text-right">
                                 @php
                                     $now_month = \Carbon\Carbon::now()->month + 1;
-                                    $sale_current_month = isset($sale_data[$now_month]['total_profit']) ? $sale_data[$now_month]['total_profit'] : 0;
-                                    $sale_previous_month = isset($sale_data[$now_month - 1]['total_profit']) ? $sale_data[$now_month - 1]['total_profit'] : 0;
+                                    $current_month_price = isset($sale_data[$now_month]['total_profit']) ? $sale_data[$now_month]['total_profit'] : 0;
+                                    $previous_month_price = isset($sale_data[$now_month - 1]['total_profit']) ? $sale_data[$now_month - 1]['total_profit'] : 0;
 
-                                    $difference = 0;
-                                    if ($sale_previous_month && $sale_current_month < $sale_previous_month) {
-                                        $difference = ($sale_current_month / $sale_previous_month) * 100;
-                                    } else if ($sale_current_month && $sale_previous_month < $sale_current_month) {
-                                        $difference = ($sale_previous_month / $sale_current_month) * 100;
-                                    }
+                                    // Calculate percentage difference
+                                    $difference = abs($current_month_price - $previous_month_price);
+                                    $percent_difference = ($difference / $previous_month_price) * 100;
                                 @endphp
-                                <p class="mb-0"><i class="{{ ($sale_current_month > $sale_previous_month) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($difference) }}%</p>
+                                <p class="mb-0"><i class="{{ ($current_month_price > $previous_month_price) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($percent_difference) }}%</p>
                                 <p class="mb-0">ယခုလ</p>
                             </div>
                         </div>

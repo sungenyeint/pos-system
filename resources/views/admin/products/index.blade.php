@@ -87,7 +87,6 @@
                                         @php
                                             $total_sale_price += $product->unit_price * $product->stock_quantity;
                                             $total_purchase_price += $product->unit_cost * $product->stock_quantity;
-                                            $total_profit += $total_sale_price - $total_purchase_price;
                                         @endphp
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ Str::limit($product->category->name, 20) }}</td>
@@ -125,7 +124,7 @@
                                         <td>စုစုပေါင်း</td>
                                         <td>{{ number_format($total_purchase_price) }}ကျပ်</td>
                                         <td>{{ number_format($total_sale_price) }}ကျပ်</td>
-                                        <td>{{ number_format($total_profit) }}ကျပ်</td>
+                                        <td>{{ number_format($total_sale_price - $total_purchase_price) }}ကျပ်</td>
                                     </tr>
                                 </tbody>
                             </table>
