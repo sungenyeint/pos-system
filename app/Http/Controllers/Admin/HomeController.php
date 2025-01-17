@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PriceChangeHistory;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
@@ -51,10 +52,19 @@ class HomeController extends Controller
             ->orderBy('stock_quantity', 'ASC')
             ->get();
 
+        $price_change_histories = PriceChangeHistory::with(['product', 'product.category'])
+            ->orderBy('change_date', 'DESC')
+            ->get()
+            ->unique(function ($item) {
+                return $item['product_id'].$item['status'];
+            })
+            ->groupBy('product_id');
+
         return view('admin.home', [
             'sale_data' => $sale_data,
             'purchase_data' => $purchase_data,
             'products' => $products,
+            'price_change_histories' => $price_change_histories,
         ]);
     }
 }

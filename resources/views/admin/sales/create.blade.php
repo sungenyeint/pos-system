@@ -210,6 +210,12 @@
         calculateTotalCost(e);
     });
 
+    $(document).on('keyup', '.total_price', function (e) {
+        let target = $(e.currentTarget).closest('.sale');
+
+        target.find('.profit').val(((target.find('.total_price').val() / target.find('.quantity').val()) - target.find('.product_id option:selected').attr('data-cost') * target.find('.quantity').val()));
+    });
+
     const calculateTotalCost = (e) => {
         let target = $(e.currentTarget).closest('.sale');
 

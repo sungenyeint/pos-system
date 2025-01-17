@@ -8,7 +8,9 @@ use App\Http\Requests\Admin\UploadRequest;
 use App\Jobs\Admin\ExcelImportJob;
 use App\Models\Category;
 use App\Models\Import;
+use App\Models\PriceChangeHistory;
 use App\Models\Product;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -83,6 +85,26 @@ class ProductController extends Controller
     {
         try {
             DB::transaction(function() use ($product, $request) {
+                if ($product->unit_cost != $request->unit_cost) {
+                    // add price_change_history table
+                    PriceChangeHistory::create([
+                        'product_id' => $product->id,
+                        'price_change' => $request->unit_cost - $product->unit_cost,
+                        'status' => 'purchase',
+                        'change_date' => Carbon::now(),
+                    ]);
+                }
+
+                if ($product->unit_price != $request->unit_price) {
+                    // add price_change_history table
+                    PriceChangeHistory::create([
+                        'product_id' => $product->id,
+                        'price_change' => $request->unit_price - $product->unit_price,
+                        'status' => 'sale',
+                        'change_date' => Carbon::now(),
+                    ]);
+                }
+
                 $product->update($request->all());
             });
         } catch (\Exception $e) {

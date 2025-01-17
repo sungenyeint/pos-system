@@ -147,6 +147,71 @@
             <!-- End col -->
         </div>
         <!-- End row -->
+        <!-- Start row -->
+        <div class="row">
+            <!-- Start col -->
+            <div class="col-lg-12 col-xl-12">
+                <div class="card m-b-30">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">စျေးနှုန်း ပြောင်းလဲသွားသော စရင်း</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="card-body">
+
+                            @forelse ($price_change_histories as $price_change_history)
+                                @if ($loop->first)
+                                <div class="table-responsive m-b-30">
+                                    <table id="posts-table" class="table table-hover">
+                                        <thead class="text-nowrap thead-dark">
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Category Name</th>
+                                                <th>Product Name</th>
+                                                <th>Unit Cost</th>
+                                                <th>Unit Price</th>
+                                                <th>Change Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                @endif
+                                @php
+                                    $unit_cost = number_format($price_change_history[0]->product->unit_cost);
+                                    $unit_price = number_format($price_change_history[0]->product->unit_price);
+                                    foreach ($price_change_history as $data) {
+                                        if ($data->status == 'purchase') {
+                                            $to = number_format($data->product->unit_cost);
+                                            $from = number_format($data->product->unit_cost - $data->price_change);
+                                            $unit_cost = $from . ' => ' . $to;
+                                        } else {
+                                            $to = number_format($data->product->unit_price);
+                                            $from = number_format($data->product->unit_price - $data->price_change);
+                                            $unit_price = $from . ' => ' . $to;
+                                        }
+                                    }
+                                @endphp
+                                            <tr>
+                                                <td>{{ $loop->index + 1 }}</td>
+                                                <td>{{ Str::limit($price_change_history[0]->product->category->name, 20) }}</td>
+                                                <td>{{ Str::limit($price_change_history[0]->product->name, 20) }}</td>
+                                                <td>{{ $unit_cost }}</td>
+                                                <td>{{ $unit_price }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($price_change_history[0]->change_data)->format('Y-m-d H:i') }}</td>
+                                            </tr>
+                                @if ($loop->last)
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @endif
+                            @empty
+                                <p>There is no information.</p>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End col -->
+        </div>
+        <!-- End row -->
     </div>
     <!-- End Contentbar -->
 @endsection
