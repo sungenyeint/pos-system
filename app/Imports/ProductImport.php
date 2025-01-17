@@ -75,7 +75,8 @@ class ProductImport
     private function validation(array $data)
     {
         $product_request = new ProductRequest();
-        $validator = Validator::make($data, [], [], $product_request->attributes());
+        $rules = $product_request->rules();
+        $validator = Validator::make($data, $rules, [], []);
 
         if ($validator->fails()) {
             throw new Exception(json_encode($validator->messages()->all()));

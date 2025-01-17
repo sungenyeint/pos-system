@@ -169,6 +169,9 @@ class ProductController extends Controller
         {
             $csv = fopen('php://output', 'w');
 
+            // Add UTF-8 BOM for proper rendering in some applications (e.g., Excel)
+            fprintf($csv, chr(0xEF).chr(0xBB).chr(0xBF));
+
             fputcsv($csv, [
                 'category_name',
                 'product_name',
@@ -201,7 +204,7 @@ class ProductController extends Controller
         };
 
         return response()->stream($callback, 200, [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $file_name . '"',
         ]);
     }

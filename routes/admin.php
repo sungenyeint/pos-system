@@ -41,5 +41,7 @@ Route::middleware('auth:admin')
         Route::post('products/upload', [ProductController::class, 'upload'])->name('products.upload');
         Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
         Route::resource('purchases', PurchaseController::class)->except('show');
+        Route::get('purchases/report', [PurchaseController::class, 'report'])->name('purchases.report');
         Route::resource('sales', SaleController::class)->except('show');
+        Route::get('sales/report', [SaleController::class, 'report'])->name('sales.report');
     });
