@@ -28,19 +28,6 @@ class LoginRequest extends FormRequest
     }
 
     /**
-    * バリデーションエラーのカスタム属性の取得
-    *
-    * @return array
-    */
-    public function attributes()
-    {
-        return [
-            'email' => 'Eメールアドレス',
-            'password' => 'パスワード',
-        ];
-    }
-
-    /**
     * 定義済みバリデーションルールのエラーメッセージ取得
     *
     * @return array
@@ -48,8 +35,8 @@ class LoginRequest extends FormRequest
     public function messages()
     {
         return [
-            'email.required' => 'Eメールアドレスまたはパスワードに誤りがあります。',
-            'password.required' => 'Eメールアドレスまたはパスワードに誤りがあります。',
+            'email.required' => 'There is an error in the email address or password.',
+            'password.required' => 'There is an error in the email address or password.',
         ];
     }
 

@@ -5,7 +5,6 @@ namespace App\Imports;
 use App\Exceptions\ArrayException;
 use App\Http\Requests\Admin\ProductRequest;
 use App\Models\Category;
-use App\Models\ImportDetail;
 use App\Models\Product;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -46,10 +45,8 @@ class ProductImport
                 $category = Category::where('name', $line[0])->first();
 
                 if ($category === null) {
-                    throw new ArrayException(['代理店データが存在しません。']);
+                    throw new ArrayException(['Category data does not exist.']);
                 }
-
-                $product = Product::where('name', $line[0])->first();
 
                 $import_data = [
                     'category_id' => $category->id,
@@ -61,7 +58,7 @@ class ProductImport
 
                 logger()->info('$import_data', $import_data);
 
-                $this->validation($import_data, $product->id ?? null);
+                $this->validation($import_data);
 
                 $product = Product::create($import_data);
                 logger()->info('Create $product', $product->toArray());
@@ -75,11 +72,10 @@ class ProductImport
         }
     }
 
-    private function validation(array $data, string $product_id = null)
+    private function validation(array $data)
     {
         $product_request = new ProductRequest();
-        $rules = $product_request->rules(product_id: $product_id);
-        $validator = Validator::make($data, $rules, [], $product_request->attributes());
+        $validator = Validator::make($data, [], [], $product_request->attributes());
 
         if ($validator->fails()) {
             throw new Exception(json_encode($validator->messages()->all()));

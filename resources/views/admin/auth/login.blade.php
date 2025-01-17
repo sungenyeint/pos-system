@@ -12,11 +12,11 @@
                                 <form method="POST" action="{{ route('admin.authenticate') }}" autocomplete="off">
                                     @csrf
                                     <div class="form-head">
-                                        <img src="{{ asset('assets/admin/images/logo.svg') }}" class="img-fluid" alt="logo">
+                                        <img src="{{ asset('assets/admin/images/logo.png') }}" class="img-fluid" alt="logo">
                                     </div>
-                                    <h4 class="text-primary my-4">ログイン</h4>
+                                    <h4 class="text-primary my-4">Login</h4>
                                     <div class="form-group">
-                                        <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="Eメールアドレス" required>
+                                        <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="Email" required>
                                         @error('email')
                                         <span class="text-danger">
                                             <strong>{{ $message }}</strong>
@@ -24,14 +24,14 @@
                                         @enderror
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="パスワード" required>
+                                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Password" required>
                                         @error('password')
                                         <span class="text-danger">
                                             <strong>{{ $message }}</strong>
                                         </span>
                                         @enderror
                                     </div>
-                                    <button type="submit" class="btn btn-success btn-lg btn-block font-18">ログイン</button>
+                                    <button type="submit" class="btn btn-success btn-lg btn-block font-18">Login</button>
                                 </form>
                             </div>
                         </div>

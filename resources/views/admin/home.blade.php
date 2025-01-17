@@ -24,7 +24,7 @@
 
                                     // Calculate percentage difference
                                     $difference = abs($current_month_price - $previous_month_price);
-                                    $percent_difference = ($difference / $previous_month_price) * 100;
+                                    $percent_difference = $previous_month_price !== 0 ? ($difference / $previous_month_price) * 100 : 0;
                                 @endphp
                                 <p class="mb-0"><i class="{{ ($current_month_price > $previous_month_price) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($percent_difference) }}%</p>
                                 <p class="mb-0">ယခုလ</p>
@@ -54,7 +54,7 @@
 
                                     // Calculate percentage difference
                                     $difference = abs($current_month_price - $previous_month_price);
-                                    $percent_difference = ($difference / $previous_month_price) * 100;
+                                    $percent_difference = $previous_month_price !== 0 ? ($difference / $previous_month_price) * 100 : 0;
                                 @endphp
                                 <p class="mb-0"><i class="{{ ($current_month_price > $previous_month_price) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($percent_difference) }}%</p>
                                 <p class="mb-0">ယခုလ</p>
@@ -84,7 +84,7 @@
 
                                     // Calculate percentage difference
                                     $difference = abs($current_month_price - $previous_month_price);
-                                    $percent_difference = ($difference / $previous_month_price) * 100;
+                                    $percent_difference = $previous_month_price !== 0 ? ($difference / $previous_month_price) * 100 : 0;
                                 @endphp
                                 <p class="mb-0"><i class="{{ ($current_month_price > $previous_month_price) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($percent_difference) }}%</p>
                                 <p class="mb-0">ယခုလ</p>

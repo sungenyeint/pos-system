@@ -13,11 +13,8 @@ class ProductRequest extends BaseFormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(string $product_id = null): array
+    public function rules(): array
     {
-        if ($this->has('product_id')) {
-            $product_id = $this->product_id;
-        }
         return [
             'category_id' => [
                 'required',
@@ -31,7 +28,7 @@ class ProductRequest extends BaseFormRequest
             'name' => [
                 'required',
                 'max:' . config('const.default_text_maxlength'),
-                Rule::unique('products', 'name')->ignore($product_id),
+                Rule::unique('products', 'name')->ignore($this->product),
             ],
             'unit_cost' => [
                 'required',

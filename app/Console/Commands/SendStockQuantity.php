@@ -43,7 +43,6 @@ class SendStockQuantity extends Command
 
         $data['products'] = $products->toArray();
 
-        // メール送信
         $this->sendMail(
             'admin.mail.noti_stock_quantity',
             $data,
