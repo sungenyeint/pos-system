@@ -185,4 +185,67 @@ class SaleController extends Controller
         return redirect()->route('admin.sales.index')
             ->with('alert.success', 'sale deleted successfully.');
     }
+
+    public function report()
+    {
+        $file_name = 'sale_' . date('Ymd') . '.csv';
+
+        $callback = function()
+        {
+            $csv = fopen('php://output', 'w');
+
+            // Add UTF-8 BOM for proper rendering in some applications (e.g., Excel)
+            fprintf($csv, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            fputcsv($csv, [
+                '#',
+                'sale_date',
+                'category_name',
+                'product_name',
+                'quantity',
+                'total_price',
+                'total_profit',
+            ]);
+
+            $total_price = 0;
+            $total_profit = 0;
+            Sale::with(['product', 'product.category'])
+                ->whereMonth('sale_date', Carbon::now()->month)
+                ->orderBy('sale_date')
+                ->get()
+                ->map(function ($sale, $key) use ($csv, &$total_price, &$total_profit) {
+                    $profit = $sale->total_price - ($sale->quantity * $sale->product->unit_cost);
+
+                    $total_price += $sale->total_price;
+                    $total_profit += $profit;
+
+                    fputcsv($csv, [
+                        $key + 1,
+                        Carbon::parse($sale->sale_date)->format('Y-m-d H:i'),
+                        $sale->product->category->name,
+                        $sale->product->name,
+                        $sale->quantity,
+                        number_format($sale->total_price) . 'ကျပ်',
+                        number_format($profit) . 'ကျပ်',
+                    ]);
+                });
+
+            fputcsv($csv, [
+                '',
+                '',
+                '',
+                '',
+                'Total',
+                number_format($total_price) . 'ကျပ်',
+                number_format($total_profit) . 'ကျပ်',
+            ]);
+
+            fclose($csv);
+        };
+
+        return response()->stream($callback, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $file_name . '"',
+        ]);
+    }
 }

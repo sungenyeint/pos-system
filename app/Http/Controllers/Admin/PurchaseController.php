@@ -153,4 +153,60 @@ class PurchaseController extends Controller
         return redirect()->route('admin.purchases.index')
             ->with('alert.success', 'purchase deleted successfully.');
     }
+
+    public function report()
+    {
+        $file_name = 'purchase_' . date('Ymd') . '.csv';
+
+        $callback = function()
+        {
+            $csv = fopen('php://output', 'w');
+
+            // Add UTF-8 BOM for proper rendering in some applications (e.g., Excel)
+            fprintf($csv, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            fputcsv($csv, [
+                '#',
+                'purchase_date',
+                'category_name',
+                'product_name',
+                'quantity',
+                'total_cost',
+            ]);
+
+            $total_cost = 0;
+            Purchase::with(['product', 'product.category'])
+                ->whereMonth('purchase_date', Carbon::now()->month)
+                ->orderBy('purchase_date')
+                ->get()
+                ->map(function ($purchase, $key) use ($csv, &$total_cost) {
+                    $total_cost += $purchase->total_cost;
+
+                    fputcsv($csv, [
+                        $key + 1,
+                        $purchase->purchase_date,
+                        $purchase->product->category->name,
+                        $purchase->product->name,
+                        $purchase->quantity,
+                        number_format($purchase->total_cost) . 'ကျပ်',
+                    ]);
+                });
+
+            fputcsv($csv, [
+                '',
+                '',
+                '',
+                '',
+                'Total',
+                number_format($total_cost) . 'ကျပ်',
+            ]);
+
+            fclose($csv);
+        };
+
+        return response()->stream($callback, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $file_name . '"',
+        ]);
+    }
 }

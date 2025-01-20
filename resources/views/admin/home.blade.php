@@ -1,6 +1,9 @@
 @extends('admin.layouts.main')
 @section('title', 'Dashboard')
-
+@section('widgetbar')
+<a class="btn btn-outline-primary" href="{{ route('admin.purchases.report') }}" target="_blank"><i class="ri-chat-download-line align-middle mr-2"></i>Purchase Report</a>
+<a class="btn btn-outline-success" href="{{ route('admin.sales.report') }}" target="_blank"><i class="ri-chat-download-line align-middle mr-2"></i>Sale Report</a>
+@endsection
 @section('content')
     <div class="contentbar">
         <!-- Start row -->
