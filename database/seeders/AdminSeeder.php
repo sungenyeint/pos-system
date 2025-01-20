@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Admin;
 
@@ -17,7 +16,7 @@ class AdminSeeder extends Seeder
     {
         Admin::create([
             'name' => 'admin',
-            'email' => 'admin@abridge-co.jp',
+            'email' => 'admin@gmail.com',
             'password' => 'P@ssw0rd',
         ]);
     }
