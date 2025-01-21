@@ -25,7 +25,7 @@
                                     <form method="POST" name="logout" action="{{ route('admin.logout') }}">
                                         @csrf
                                         <a class="dropdown-item text-danger" href="javascript:logout.submit()">
-                                            <i class="ri-shut-down-line"></i>ログアウト
+                                            <i class="ri-shut-down-line"></i>Logout
                                         </a>
                                     </form>
                                 </div>

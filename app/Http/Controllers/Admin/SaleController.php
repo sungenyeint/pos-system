@@ -18,13 +18,7 @@ class SaleController extends Controller
 {
     public function index()
     {
-        $sales = Sale::with([
-                'product',
-                'product.category'
-            ])
-            ->selectRaw('sales.*, (products.unit_price - products.unit_cost) * sales.quantity as profit')
-            ->join('products', 'sales.product_id', '=', 'products.id')
-            ->orderBy('updated_at', 'DESC');
+        $sales = Sale::with(['product', 'product.category'])->sortable(['sale_date', 'desc']);
 
         if (request()->filled('category_id')) {
             $sales->whereHas('product', function ($query) {

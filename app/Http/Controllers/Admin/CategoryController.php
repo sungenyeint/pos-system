@@ -14,7 +14,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $categories = Category::orderBy('updated_at', 'DESC');
+        $categories = Category::sortable(['updated_at', 'desc']);
 
         if ($request->filled('name')) {
             $categories->where('name', 'like', '%' . $request->name . '%');

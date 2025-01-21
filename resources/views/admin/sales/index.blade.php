@@ -82,19 +82,21 @@
                     <h5 class="card-title">Sale List</h5>
                 </div>
                 <div class="card-body">
-
-                    @forelse ($sales as $key => $sale)
+                    @php
+                        $profit = 0;
+                    @endphp
+                    @forelse ($sales as $sale)
                         @if ($loop->first)
                         <div class="table-responsive m-b-30">
                             <table id="posts-table" class="table table-striped">
                                 <thead class="text-nowrap thead-dark">
                                     <tr>
-                                        <th>No.</th>
-                                        <th>Category Name</th>
-                                        <th>Product Name</th>
-                                        <th>Sale Date</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
+                                        <th>#</th>
+                                        <th>@sortablelink('category_name', 'Category Name')</th>
+                                        <th>@sortablelink('product.name', 'Product Name')</th>
+                                        <th>@sortablelink('sale_date', 'Sale Date')</th>
+                                        <th>@sortablelink('quantity', 'Quantity')</th>
+                                        <th>@sortablelink('total_price', 'Total Price')</th>
                                         <th>Profit</th>
                                         <th>Action</th>
                                     </tr>
@@ -102,13 +104,13 @@
                                 <tbody>
                         @endif
                                     <tr>
-                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ Str::limit($sale->product->category->name, 20) }}</td>
                                         <td>{{ Str::limit($sale->product->name, 20) }}</td>
                                         <td>{{ \Carbon\Carbon::parse($sale->sale_date)->format('Y-m-d H:i') }}</td>
                                         <td>{{ $sale->quantity }}</td>
                                         <td>{{ number_format($sale->total_price) }}ကျပ်</td>
-                                        <td>{{ number_format($sale->profit) }}ကျပ်</td>
+                                        <td>{{ number_format(($sale->product->unit_price - $sale->product->unit_cost) * $sale->quantity) }}ကျပ်</td>
                                         <td>
                                             <form method="POST" class="form-destroy" action="{{ route('admin.sales.destroy', $sale->id) }}">
                                                 @csrf
@@ -122,6 +124,9 @@
                                             </form>
                                         </td>
                                     </tr>
+                                    @php
+                                        $profit += ($sale->product->unit_price - $sale->product->unit_cost) * $sale->quantity;
+                                    @endphp
                         @if ($loop->last)
                                     <tr class="table-primary">
                                         <td></td>
@@ -141,7 +146,7 @@
                                         <td></td>
                                         <td>စုစုပေါင်း</td>
                                         <td>{{ number_format($sales->sum('total_price')) }}ကျပ်</td>
-                                        <td>{{ number_format($sales->sum('profit')) }}ကျပ်</td>
+                                        <td>{{ number_format($profit) }}ကျပ်</td>
                                         <td></td>
                                     </tr>
                                 </tbody>

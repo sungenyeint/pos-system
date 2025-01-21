@@ -80,11 +80,12 @@
                             <table id="posts-table" class="table table-striped">
                                 <thead class="text-nowrap thead-dark">
                                     <tr>
-                                        <th>No.</th>
-                                        <th>Product</th>
-                                        <th>Purchase Date</th>
-                                        <th>Quantity</th>
-                                        <th>Total Cost</th>
+                                        <th>#</th>
+                                        <th>@sortablelink('category_name', 'Category Name')</th>
+                                        <th>@sortablelink('product.name', 'Product Name')</th>
+                                        <th>@sortablelink('purchase_date', 'Purchase Date')</th>
+                                        <th>@sortablelink('quantity', 'Quantity')</th>
+                                        <th>@sortablelink('total_cost', 'Total Cost')</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -93,6 +94,7 @@
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ Str::limit($purchase->product->name, 20) }}</td>
+                                        <td>{{ Str::limit($purchase->product->category->name, 20) }}</td>
                                         <td>{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('Y-m-d H:i') }}</td>
                                         <td>{{ $purchase->quantity }}</td>
                                         <td>{{ number_format($purchase->total_cost) }}ကျပ်</td>
@@ -111,6 +113,7 @@
                                     </tr>
                         @if ($loop->last)
                                     <tr class="table-primary">
+                                        <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>

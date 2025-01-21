@@ -160,7 +160,6 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="card-body">
-
                             @forelse ($price_change_histories as $price_change_history)
                                 @if ($loop->first)
                                 <div class="table-responsive m-b-30">
@@ -198,7 +197,7 @@
                                                 <td>{{ Str::limit($price_change_history[0]->product->name, 20) }}</td>
                                                 <td>{{ $unit_cost }}</td>
                                                 <td>{{ $unit_price }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($price_change_history[0]->change_data)->format('Y-m-d H:i') }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($price_change_history[0]->change_date)->format('Y-m-d H:i') }}</td>
                                             </tr>
                                 @if ($loop->last)
                                         </tbody>
@@ -234,17 +233,14 @@
 
     for (let i = 1; i <= 12; i++) {
         if (!sale_data.hasOwnProperty(i)) {
-            console.log('no ', i);
             sales[i] = 0; // Add the missing key with the default value
             profits[i] = 0; // Add the missing key with the default value
         } else {
-            console.log('yes ', i);
             sales[i] = sale_data[i]['total_price'];
             profits[i] = sale_data[i]['total_profit'];
         }
     }
-console.log(profits);
-console.log(sales);
+
     const purchases = @json($purchase_data);
     for (let i = 1; i <= 12; i++) {
         if (!purchases.hasOwnProperty(i)) {

@@ -72,12 +72,12 @@
                             <table id="posts-table" class="table table-striped">
                                 <thead class="text-nowrap thead-dark">
                                     <tr>
-                                        <th>No.</th>
-                                        <th>Category Name</th>
-                                        <th>Product Name</th>
-                                        <th>Stock Quantity</th>
-                                        <th>Unit Cost</th>
-                                        <th>Unit Price</th>
+                                        <th>#</th>
+                                        <th>@sortablelink('category.name', 'Category Name')</th>
+                                        <th>@sortablelink('name', 'Product Name')</th>
+                                        <th>@sortablelink('stock_quantity', 'Stock Quantity')</th>
+                                        <th>@sortablelink('unit_cost', 'Unit Cost')</th>
+                                        <th>@sortablelink('unit_price', 'Unit Price')</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>

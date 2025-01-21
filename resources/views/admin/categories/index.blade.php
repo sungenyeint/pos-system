@@ -47,13 +47,15 @@
                             <table id="posts-table" class="table table-striped">
                                 <thead class="text-nowrap thead-dark">
                                     <tr>
-                                        <th>Name</th>
+                                        <th>#</th>
+                                        <th>@sortablelink('name', 'Category Name')</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                         @endif
                                     <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ Str::limit($category->name, 20) }}</td>
                                         <td>
                                             <form method="POST" class="form-destroy" action="{{ route('admin.categories.destroy', $category->id) }}">

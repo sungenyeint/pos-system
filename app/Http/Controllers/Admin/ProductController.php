@@ -21,8 +21,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')
-            ->orderBy('stock_quantity', 'ASC');
+        $products = Product::with('category')->sortable(['updated_at', 'desc']);
 
         if (request()->filled('category_id')) {
             $products->where('category_id', request('category_id'));

@@ -2,7 +2,7 @@
     <!-- Start Logobar -->
     <div class="logobar">
         <a href="{{ route('admin.admins.index') }}" class="logo logo-large"><img src="{{ asset('assets/admin/images/logo.png') }}" class="img-fluid" alt="logo"></a>
-        <a href="{{ route('admin.admins.index') }}" class="logo logo-small"><img src="{{ asset('assets/admin/images/logo.svg') }}" class="img-fluid" alt="logo"></a>
+        <a href="{{ route('admin.admins.index') }}" class="logo logo-small"><img src="{{ asset('assets/admin/images/logo.png') }}" class="img-fluid" alt="logo"></a>
     </div>
     <!-- End Logobar -->
     <!-- Start Navigationbar -->

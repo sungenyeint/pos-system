@@ -4,10 +4,11 @@ namespace App\Models;
 
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Kyslik\ColumnSortable\Sortable;
 
 class Product extends Model
 {
-    use HasUuid;
+    use HasUuid, Sortable;
 
     // PRIMARY KEY uuid 設定
     protected $primaryKey = 'id';
@@ -21,6 +22,8 @@ class Product extends Model
         'unit_price',
         'stock_quantity',
     ];
+
+    public $sortable = ['id', 'category_id', 'name', 'stock_quantity', 'unit_cost', 'unit_price'];
 
     public function category()
     {
