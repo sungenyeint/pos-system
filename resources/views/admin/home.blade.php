@@ -1,99 +1,107 @@
 @extends('admin.layouts.main')
 @section('title', 'Dashboard')
 @section('widgetbar')
-<a class="btn btn-outline-primary" href="{{ route('admin.purchases.report') }}" target="_blank"><i class="ri-chat-download-line align-middle mr-2"></i>Purchase Report</a>
-<a class="btn btn-outline-success" href="{{ route('admin.sales.report') }}" target="_blank"><i class="ri-chat-download-line align-middle mr-2"></i>Sale Report</a>
+<div class="btn p-0">
+    @php
+        $select_month = request()->month ? (int) request()->month : \Carbon\Carbon::now()->month;
+    @endphp
+    <select class="month p-2" name="month" >
+        @for ($i = 1; $i <= 12; $i++)
+            <option value="{{ $i }}" @if (($select_month ?? \Carbon\Carbon::now()->month) == $i) selected @endif>
+                {{ \Carbon\Carbon::create()->month($i)->format('F') }}
+            </option>
+        @endfor
+    </select>
+</div>
+<a class="btn btn-outline-primary" href="{{ route('admin.purchases.report', ['month' => $select_month]) }}" target="_blank"><i class="ri-chat-download-line align-middle mr-2"></i>Purchase Report</a>
+<a class="btn btn-outline-success" href="{{ route('admin.sales.report', ['month' => $select_month]) }}" target="_blank"><i class="ri-chat-download-line align-middle mr-2"></i>Sale Report</a>
 @endsection
 @section('content')
     <div class="contentbar">
         <!-- Start row -->
         <div class="row">
             <!-- Start col -->
-            <div class="col-lg-12 col-xl-4">
-                <div class="card m-b-30">
-                    <div class="card-header">
-                        <h3 class="card-title mb-0">အ၀ယ်စရင်း</h3>
-                    </div>
-                    <div class="card-body pb-0">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <h4>{{ $purchase_data ? number_format($purchase_data[\Carbon\Carbon::now()->month]) : 0 }}ကျပ်</h4>
+            <div class="col-lg-12 col-xl-2">
+                <h6 class="text-center mb-3">Compared to {{ \Carbon\Carbon::create()->month($select_month - 1)->format('F') }} result</h6>
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="row mx-0">
+                            <div class="col-8 rounded-left py-3 bg-primary">
+                                <p class="card-title text-white font-14">Total Purchase</p>
+                                <h6 class="card-text text-white">Ks {{ $purchase_data && isset($purchase_data[$select_month]) ? number_format($purchase_data[$select_month]) : 0 }}</h6>
                             </div>
-                            <div class="col-6 text-right">
+                            <div class="col-4 rounded-right py-3 px-0" style="background: #b0deff;">
                                 @php
-                                    $now_month = \Carbon\Carbon::now()->month + 1;
-                                    $current_month_price = isset($purchase_data[$now_month]) ? $purchase_data[$now_month] : 0;
-                                    $previous_month_price = isset($purchase_data[$now_month - 1]) ? $purchase_data[$now_month - 1] : 0;
+                                    $current_month_price = isset($purchase_data[$select_month]) ? $purchase_data[$select_month] : 0;
+                                    $previous_month_price = isset($purchase_data[$select_month - 1]) ? $purchase_data[$select_month - 1] : 0;
 
                                     // Calculate percentage difference
                                     $difference = abs($current_month_price - $previous_month_price);
                                     $percent_difference = $previous_month_price !== 0 ? ($difference / $previous_month_price) * 100 : 0;
+                                    $success = $current_month_price > $previous_month_price ? true : false
                                 @endphp
-                                <p class="mb-0"><i class="{{ ($current_month_price > $previous_month_price) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($percent_difference) }}%</p>
-                                <p class="mb-0">ယခုလ</p>
+                                <h6 class="text-center text-dark">{{ \Carbon\Carbon::create()->month($select_month)->format('M') }}</h6>
+                                <p class="mb-0 font-12 text-center align-middle {{ $success ? 'text-success' : 'text-danger' }}"><i class="{{ $success ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle"></i>{{ ceil($percent_difference) }}%</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="card mt-4">
+                    <div class="card-body p-0">
+                        <div class="row mx-0">
+                            <div class="col-8 rounded-left py-3 bg-success">
+                                <p class="card-title text-white font-14">Total Sale</p>
+                                <h6 class="card-text text-white">Ks {{ $sale_data && isset($sale_data[$select_month]) ? number_format($sale_data[$select_month]['total_price']) : 0 }}</h6>
+                            </div>
+                            <div class="col-4 rounded-right py-3 px-0" style="background: #bbf4bc;">
+                                @php
+                                $current_month_price = isset($sale_data[$select_month]['total_price']) ? $sale_data[$select_month]['total_price'] : 0;
+                                $previous_month_price = isset($sale_data[$select_month - 1]['total_price']) ? $sale_data[$select_month - 1]['total_price'] : 0;
+
+                                // Calculate percentage difference
+                                $difference = abs($current_month_price - $previous_month_price);
+                                $percent_difference = $previous_month_price !== 0 ? ($difference / $previous_month_price) * 100 : 0;
+                                    $success = $current_month_price > $previous_month_price ? true : false
+                                @endphp
+                                <h6 class="text-center text-dark">{{ \Carbon\Carbon::create()->month($select_month)->format('M') }}</h6>
+                                <p class="mb-0 font-12 text-center align-middle {{ $success ? 'text-success' : 'text-danger' }}"><i class="{{ $success ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle"></i>{{ ceil($percent_difference) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-4">
+                    <div class="card-body p-0">
+                        <div class="row mx-0">
+                            <div class="col-8 rounded-left py-3 bg-warning">
+                                <p class="card-title text-white font-14">Total Profit</p>
+                                <h6 class="card-text text-white">Ks {{ $sale_data && isset($sale_data[$select_month]) ? number_format($sale_data[$select_month]['total_profit']) : 0 }}</h6>
+                            </div>
+                            <div class="col-4 rounded-right py-3 px-0" style="background: #ffffac;">
+                                @php
+                                $current_month_price = isset($sale_data[$select_month]['total_profit']) ? $sale_data[$select_month]['total_profit'] : 0;
+                                $previous_month_price = isset($sale_data[$select_month - 1]['total_profit']) ? $sale_data[$select_month - 1]['total_profit'] : 0;
+
+                                // Calculate percentage difference
+                                $difference = abs($current_month_price - $previous_month_price);
+                                $percent_difference = $previous_month_price !== 0 ? ($difference / $previous_month_price) * 100 : 0;
+                                    $success = $current_month_price > $previous_month_price ? true : false
+                                @endphp
+                                <h6 class="text-center text-dark">{{ \Carbon\Carbon::create()->month($select_month)->format('M') }}</h6>
+                                <p class="mb-0 font-12 text-center align-middle {{ $success ? 'text-success' : 'text-danger' }}"><i class="{{ $success ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle"></i>{{ ceil($percent_difference) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End col -->
+            <!-- Start col -->
+            <div class="col-lg-12 col-xl-10">
+                <div class="card m-b-30">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">Total Survey</h3>
+                    </div>
+                    <div class="card-body pb-0">
                         <div id="apex-line-chart1"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- End col -->
-            <!-- Start col -->
-            <div class="col-lg-12 col-xl-4">
-                <div class="card m-b-30">
-                    <div class="card-header">
-                        <h3 class="card-title mb-0">အရောင်းစရင်း</h3>
-                    </div>
-                    <div class="card-body pb-0">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <h4>{{ $sale_data ? number_format($sale_data[\Carbon\Carbon::now()->month]['total_price']) : 0 }}ကျပ်</h4>
-                            </div>
-                            <div class="col-6 text-right">
-                                @php
-                                    $now_month = \Carbon\Carbon::now()->month + 1;
-                                    $current_month_price = isset($sale_data[$now_month]['total_price']) ? $sale_data[$now_month]['total_price'] : 0;
-                                    $previous_month_price = isset($sale_data[$now_month - 1]['total_price']) ? $sale_data[$now_month - 1]['total_price'] : 0;
-
-                                    // Calculate percentage difference
-                                    $difference = abs($current_month_price - $previous_month_price);
-                                    $percent_difference = $previous_month_price !== 0 ? ($difference / $previous_month_price) * 100 : 0;
-                                @endphp
-                                <p class="mb-0"><i class="{{ ($current_month_price > $previous_month_price) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($percent_difference) }}%</p>
-                                <p class="mb-0">ယခုလ</p>
-                            </div>
-                        </div>
-                        <div id="apex-line-chart2"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- End col -->
-            <!-- Start col -->
-            <div class="col-lg-12 col-xl-4">
-                <div class="card m-b-30">
-                    <div class="card-header">
-                        <h3 class="card-title mb-0">အမြတ်စရင်း</h3>
-                    </div>
-                    <div class="card-body pb-0">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <h4>{{ $sale_data ? number_format($sale_data[\Carbon\Carbon::now()->month]['total_profit']) : 0 }}ကျပ်</h4>
-                            </div>
-                            <div class="col-6 text-right">
-                                @php
-                                    $now_month = \Carbon\Carbon::now()->month + 1;
-                                    $current_month_price = isset($sale_data[$now_month]['total_profit']) ? $sale_data[$now_month]['total_profit'] : 0;
-                                    $previous_month_price = isset($sale_data[$now_month - 1]['total_profit']) ? $sale_data[$now_month - 1]['total_profit'] : 0;
-
-                                    // Calculate percentage difference
-                                    $difference = abs($current_month_price - $previous_month_price);
-                                    $percent_difference = $previous_month_price !== 0 ? ($difference / $previous_month_price) * 100 : 0;
-                                @endphp
-                                <p class="mb-0"><i class="{{ ($current_month_price > $previous_month_price) ? 'ri-arrow-right-up-line text-success' : 'ri-arrow-right-down-line text-danger' }} align-middle font-18 mr-1"></i>{{ ceil($percent_difference) }}%</p>
-                                <p class="mb-0">ယခုလ</p>
-                            </div>
-                        </div>
-                        <div id="apex-line-chart3"></div>
                     </div>
                 </div>
             </div>
@@ -117,7 +125,7 @@
                                     <table id="posts-table" class="table table-hover">
                                         <thead class="text-nowrap thead-dark">
                                             <tr>
-                                                <th>No.</th>
+                                                <th>#</th>
                                                 <th>Category Name</th>
                                                 <th>Product Name</th>
                                                 <th>Stock Quantity</th>
@@ -166,7 +174,7 @@
                                     <table id="posts-table" class="table table-hover">
                                         <thead class="text-nowrap thead-dark">
                                             <tr>
-                                                <th>No.</th>
+                                                <th>#</th>
                                                 <th>Category Name</th>
                                                 <th>Product Name</th>
                                                 <th>Unit Cost</th>
@@ -247,6 +255,16 @@
             purchases[i] = '0'; // Add the missing key with the default value
         }
     }
+
+    $('.month').on('change', function() {
+        const month = $(this).val();
+        // Build the new URL
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('month', month); // Update or add the 'month' query parameter
+
+        // Redirect to the updated URL
+        window.location.href = currentUrl.toString();
+    })
 
 </script>
 <script src="{{ asset('assets/admin/js/custom/custom-dashboard.js') }}"></script>

@@ -57,7 +57,7 @@
                                         <select id="sale_month" name="sale_month" class="form-control">
                                             <option value="">ရွေးချယ်ပါ</option>
                                             @for ($i = 1; $i <= 12; $i++)
-                                                <option value="{{ \Carbon\Carbon::create()->month($i)->format('F') }}" @if (request()->sale_month == \Carbon\Carbon::create()->month($i)->format('F')) selected @endif>
+                                                <option value="{{ $i }}" @if (request()->sale_month == $i) selected @endif>
                                                     {{ \Carbon\Carbon::create()->month($i)->format('F') }}
                                                 </option>
                                             @endfor
