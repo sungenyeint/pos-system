@@ -18,7 +18,7 @@ class SaleController extends Controller
 {
     public function index()
     {
-        $sales = Sale::with(['product', 'product.category'])->sortable(['sale_date', 'desc']);
+        $sales = Sale::with(['product', 'product.category'])->sortable(['sale_date' => 'desc']);
 
         if (request()->filled('category_id')) {
             $sales->whereHas('product', function ($query) {

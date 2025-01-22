@@ -23,7 +23,7 @@ class Product extends Model
         'stock_quantity',
     ];
 
-    public $sortable = ['id', 'category_id', 'name', 'stock_quantity', 'unit_cost', 'unit_price'];
+    public $sortable = ['id', 'category_id', 'name', 'stock_quantity', 'unit_cost', 'unit_price', 'updated_at'];
 
     public function category()
     {

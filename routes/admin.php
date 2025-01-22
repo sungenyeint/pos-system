@@ -38,7 +38,7 @@ Route::middleware('auth:admin')
         Route::resource('admins', AdminController::class)->except('show');
         Route::resource('categories', CategoryController::class)->except('show');
         Route::resource('products', ProductController::class)->except('show');
-        Route::post('products/upload', [ProductController::class, 'upload'])->name('products.upload');
+        Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
         Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
         Route::resource('purchases', PurchaseController::class)->except('show');
         Route::get('purchases/report', [PurchaseController::class, 'report'])->name('purchases.report');

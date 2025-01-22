@@ -17,7 +17,7 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-        $purchases = Purchase::with(['product', 'product.category'])->sortable(['purchase_date', 'desc']);
+        $purchases = Purchase::with(['product', 'product.category'])->sortable(['purchase_date' => 'desc']);
 
         if (request()->filled('product_id')) {
             $purchases->where('product_id', request('product_id'));

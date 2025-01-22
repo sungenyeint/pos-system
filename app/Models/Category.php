@@ -19,7 +19,7 @@ class Category extends Model
         'name',
     ];
 
-    public $sortable = ['id', 'name'];
+    public $sortable = ['id', 'name', 'updated_at'];
 
     public function products()
     {

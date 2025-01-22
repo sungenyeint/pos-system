@@ -13,8 +13,11 @@ class ProductRequest extends BaseFormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(int $unit_cost = null): array
     {
+        if ($this->has('unit_cost')) {
+            $unit_cost = $this->unit_cost;
+        }
         return [
             'category_id' => [
                 'required',
@@ -39,15 +42,16 @@ class ProductRequest extends BaseFormRequest
                 'required',
                 'numeric',
                 'min:1',
-                function ($attribute, $value, $fail) {
-                    if ($value <= $this->unit_cost) {
-                        $fail("The $attribute must be greater than unit cost.");
+                function ($attribute, $value, $fail) use ($unit_cost) {
+                    if ($value <= $unit_cost) {
+                        $fail("The $attribute must be greater than unit_cost.");
                     }
                 },
             ],
             'stock_quantity' => [
                 'required',
                 'numeric',
+                'min:0',
             ]
         ];
     }

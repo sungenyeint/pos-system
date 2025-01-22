@@ -2,26 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exceptions\ArrayException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProductRequest;
 use App\Http\Requests\Admin\UploadRequest;
-use App\Jobs\Admin\ExcelImportJob;
 use App\Models\Category;
-use App\Models\Import;
 use App\Models\PriceChangeHistory;
 use App\Models\Product;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')->sortable(['updated_at', 'desc']);
+        $products = Product::with('category')->sortable(['updated_at' => 'desc']);
 
         if (request()->filled('category_id')) {
             $products->where('category_id', request('category_id'));
@@ -133,9 +131,9 @@ class ProductController extends Controller
     }
 
     /**
-    * CSV upload
+    * CSV import
     */
-    public function upload(Request $request)
+    public function import(Request $request)
     {
         $update_request = new UploadRequest();
         $validator = Validator::make($request->all(), $update_request->rules(), [], $update_request->attributes());
@@ -146,15 +144,80 @@ class ProductController extends Controller
         }
 
         $import_file = $request->file('import_file');
-        $file_name = $import_file->getClientOriginalName();
 
-        $file_path = $import_file->storeAs(config('const.import_csv_file_path'), $file_name);
+        $file = new \SplFileObject($import_file);
 
-        dispatch(new ExcelImportJob($file_path))
-            ->onQueue('excel_import');
+        $file->setFlags(
+            \SplFileObject::READ_CSV |
+            \SplFileObject::READ_AHEAD |
+            \SplFileObject::SKIP_EMPTY
+        );
+
+        $row_num = 2;
+
+        $errors = '';
+        foreach ($file as $i => $line) {
+            $row_num = $i + 1;
+            logger()->info('$line', $line);
+
+            if ($i < 1) {
+                continue;
+            }
+
+            logger()->info('Line info', [
+                'row_num' => $row_num,
+            ]);
+
+            try {
+                $category = Category::where('name', $line[0])->first();
+
+                if ($category === null) {
+                    throw new Exception('Category data does not exist.');
+                }
+
+                $import_data = [
+                    'category_id' => $category->id,
+                    'name' => $line[1],
+                    'unit_cost' => $line[2],
+                    'unit_price' => $line[3],
+                    'stock_quantity' => $line[4],
+                ];
+
+                logger()->info('$import_data', $import_data);
+
+                $this->validation($import_data, $import_data['unit_cost']);
+
+                $product = Product::create($import_data);
+                logger()->info('Create $product', $product->toArray());
+
+            } catch (ArrayException $ae) {
+                $errors .= $row_num . ' : ' . implode(',', $ae->getMessages()) . '<br>';
+                logger()->info('$ie', [$ae->getCode(), $ae->getMessages()]);
+
+            } catch (Exception $e) {
+                $errors .= $row_num . ' : ' . $e->getMessage() . '<br>';
+                logger()->error('$e', [$e->getCode(), $e->getMessage()]);
+            }
+        }
+
+        if ($errors) {
+            return back()
+                ->with('alert.error', $errors);
+        }
 
         return redirect()->route('admin.products.index')
             ->with('alert.success','CSV uploaded successfully.');
+    }
+
+    private function validation(array $data, int $unit_cost = null)
+    {
+        $product_request = new ProductRequest();
+        $rules = $product_request->rules(unit_cost: $unit_cost);
+        $validator = Validator::make($data, $rules, [], []);
+
+        if ($validator->fails()) {
+            throw new ArrayException($validator->messages()->all());
+        }
     }
 
     /**

@@ -154,7 +154,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="{{ route('admin.products.upload') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.products.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group mb-3">
@@ -162,10 +162,19 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="submit">Import</button>
+                    <button id="import" class="btn btn-primary" type="submit">Import</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+<script>
+    $('#import').on('click', () => {
+        $.LoadingOverlay("show");
+    });
+</script>
 @endsection

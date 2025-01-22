@@ -9,9 +9,6 @@
 @if (session('alert.secondary'))
     <div class="alert alert-secondary m-t-30 m-r-30 m-l-30" role="alert">
         {{ session('alert.secondary') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
     </div>
 @endif
 @if (session('alert.success'))
@@ -24,18 +21,18 @@
 @endif
 @if (session('alert.error'))
     <div class="alert alert-danger m-t-30 m-r-30 m-l-30" role="alert">
-        {{ session('alert.error') }}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
+        {!! session('alert.error') !!}
     </div>
 @endif
 @if (session('alert.warning'))
     <div class="alert alert-warning m-t-30 m-r-30 m-l-30" role="alert">
-        {!! session('alert.warning') !!}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
+        {!! session('alert.warning') !!}
     </div>
 @endif
 @if (session('alert.info'))
