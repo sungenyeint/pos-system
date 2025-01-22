@@ -35,9 +35,7 @@ class SaleController extends Controller
         }
 
         if (request()->filled('sale_month')) {
-            $from = Carbon::parse(request()->sale_month . ' ' . now()->year)->startOfDay();
-            $to = Carbon::parse(request()->sale_month . ' ' . now()->year)->endOfMonth()->endOfDay();
-            $sales->whereBetween('sale_date', [$from, $to]);
+            $sales->whereMonth('sale_date', request()->sale_month);
         }
 
         $sales = $sales->paginate(config('const.default_paginate_number'));
@@ -182,7 +180,7 @@ class SaleController extends Controller
 
     public function report()
     {
-        $file_name = 'sale_' . date('Ymd') . '.csv';
+        $file_name = Carbon::create()->month((int) request()->month ?? Carbon::now()->month)->format('F') . '_sale_' . date('Ymd') . '.csv';
 
         $callback = function()
         {
@@ -204,7 +202,7 @@ class SaleController extends Controller
             $total_price = 0;
             $total_profit = 0;
             Sale::with(['product', 'product.category'])
-                ->whereMonth('sale_date', Carbon::now()->month)
+                ->whereMonth('sale_date', request()->month)
                 ->orderBy('sale_date')
                 ->get()
                 ->map(function ($sale, $key) use ($csv, &$total_price, &$total_profit) {

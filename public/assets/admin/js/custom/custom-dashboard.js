@@ -7,118 +7,81 @@
 $(document).ready(function() {
 
     /* -----  Apex Line1 Chart ----- */
+    const chartData = {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        series: [
+            {
+                name: 'Total Purchase',
+                data: Object.values(purchases)
+            },
+            {
+                name: 'Total Sale',
+                data: Object.values(sales)
+            },
+            {
+                name: 'Total Profit',
+                data: Object.values(profits)
+            }
+        ]
+    };
+
     var options = {
         chart: {
-            height: 200,
-            type: 'bar',
-            toolbar: {
-                show: false
-            },
-            zoom: {
-                enabled: false
-            }
+            type: 'area',
+            height: 350,
         },
-        colors: ['#1ba4fd'],
-        series: [{
-            data: Object.values(purchases)
-        }],
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'smooth',
-            width: 4
-        },
-        grid: {
-            row: {
-                colors: ['transparent', 'transparent'], opacity: .2
-            },
-            borderColor: 'transparent'
-        },
-        yaxis: {
-            labels: {
-                show: false
-            },
-            min: 0
-        },
+        series: chartData.series,
         xaxis: {
-            labels: {
-                show: true
-            },
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            categories: chartData.categories,
             axisBorder: {
-                show: true,
+                show: false,
                 color: 'transparent'
             },
             axisTicks: {
-                show: true,
+                show: false,
                 color: 'transparent'
+            },
+        },
+        tooltip: {
+            y: {
+                formatter: function (value) {
+                    // Format number with commas
+                    return value.toLocaleString() + 'ကျပ်';
+                }
             }
-        }
-    }
+        },
+        yaxis: {
+            labels: {
+                formatter: function (value) {
+                    // Format y-axis labels with commas
+                    return value.toLocaleString();
+                }
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        colors: ['#008FFB', '#00E396', '#FEB019'], // Sale, Purchase, Profit colors
+        stroke: {
+            curve: 'smooth', // Smooth line style
+            width: 4
+        },
+        legend: {
+            position: 'top'
+        },
+        grid: {
+            borderColor: '#e7e7e7',
+        },
+    };
+
     var chart = new ApexCharts(
         document.querySelector("#apex-line-chart1"),
         options
     );
     chart.render();
 
-    /* -----  Apex Line2 Chart ----- */
-    var options = {
-        chart: {
-            height: 200,
-            type: 'bar',
-            toolbar: {
-                show: false
-            },
-            zoom: {
-                enabled: false
-            }
-        },
-        colors: ['#3dcd8b'],
-        series: [{
-            data: Object.values(sales)
-        }],
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'smooth',
-            width: 4
-        },
-        grid: {
-            row: {
-                colors: ['transparent', 'transparent'], opacity: .2
-            },
-            borderColor: 'transparent'
-        },
-        yaxis: {
-            labels: {
-                show: false
-            },
-            min: 0
-        },
-        xaxis: {
-            labels: {
-                show: true
-            },
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            axisBorder: {
-                show: false,
-                color: 'transparent'
-            },
-            axisTicks: {
-                show: false,
-                color: 'transparent'
-            }
-        }
-    }
-    var chart = new ApexCharts(
-        document.querySelector("#apex-line-chart2"),
-        options
-    );
-    chart.render();
-
     /* -----  Apex Line3 Chart ----- */
+    /*
     var options = {
         chart: {
             height: 200,
@@ -173,17 +136,5 @@ $(document).ready(function() {
         options
     );
     chart.render();
-
-    /* -- User Slider -- */
-    $('.user-slider').slick({
-        arrows: true,
-        dots: false,
-        infinite: true,
-        adaptiveHeight: true,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        prevArrow: '<i class="ri-arrow-left-s-line"></i>',
-        nextArrow: '<i class="ri-arrow-right-s-line"></i>'
-    });
-
+    */
 });

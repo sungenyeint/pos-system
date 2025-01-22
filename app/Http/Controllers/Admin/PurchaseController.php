@@ -24,9 +24,7 @@ class PurchaseController extends Controller
         }
 
         if (request()->filled('purchase_month')) {
-            $from = Carbon::parse(request()->purchase_month . ' ' . now()->year)->startOfDay();
-            $to = Carbon::parse(request()->purchase_month . ' ' . now()->year)->endOfMonth()->endOfDay();
-            $purchases->whereBetween('purchase_date', [$from, $to]);
+            $purchases->whereMonth('purchase_date', request()->purchase_month);
         }
 
         $purchases = $purchases->paginate(config('const.default_paginate_number'));
@@ -155,7 +153,7 @@ class PurchaseController extends Controller
 
     public function report()
     {
-        $file_name = 'purchase_' . date('Ymd') . '.csv';
+        $file_name = Carbon::create()->month((int) request()->month ?? Carbon::now()->month)->format('F') . '_purchase_' . date('Ymd') . '.csv';
 
         $callback = function()
         {
@@ -175,7 +173,7 @@ class PurchaseController extends Controller
 
             $total_cost = 0;
             Purchase::with(['product', 'product.category'])
-                ->whereMonth('purchase_date', Carbon::now()->month)
+                ->whereMonth('purchase_date', request()->month)
                 ->orderBy('purchase_date')
                 ->get()
                 ->map(function ($purchase, $key) use ($csv, &$total_cost) {
