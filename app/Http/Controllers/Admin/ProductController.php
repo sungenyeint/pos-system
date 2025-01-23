@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Exceptions\ArrayException;
+use AppExceptions\ArrayException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProductRequest;
 use App\Http\Requests\Admin\UploadRequest;
@@ -54,7 +54,7 @@ class ProductController extends Controller
             DB::transaction(function() use ($request) {
                 Product::create($request->all());
             });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()
                 ->withInput()
                 ->with('alert.error', 'Failed to create product. ' . $e->getMessage());
@@ -104,7 +104,7 @@ class ProductController extends Controller
 
                 $product->update($request->all());
             });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()
                 ->withInput()
                 ->with('alert.error', 'Failed to update product. ' . $e->getMessage());
@@ -121,7 +121,7 @@ class ProductController extends Controller
                 $product->delete();
 
             });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()
                 ->withInput()
                 ->with('alert.error', 'Failed to update product. ' . $e->getMessage());
@@ -135,78 +135,102 @@ class ProductController extends Controller
     */
     public function import(Request $request)
     {
-        $update_request = new UploadRequest();
-        $validator = Validator::make($request->all(), $update_request->rules(), [], $update_request->attributes());
-
-        if ($validator->fails()) {
-            return back()
-                ->with('alert.error','CSV upload failed.');
-        }
-
-        $import_file = $request->file('import_file');
-
-        $file = new \SplFileObject($import_file);
-
-        $file->setFlags(
-            \SplFileObject::READ_CSV |
-            \SplFileObject::READ_AHEAD |
-            \SplFileObject::SKIP_EMPTY
+        // Validate upload request
+        $uploadRequest = new UploadRequest();
+        $validator = Validator::make(
+            $request->all(),
+            $uploadRequest->rules(),
+            [],
+            $uploadRequest->attributes()
         );
 
-        $row_num = 2;
+        if ($validator->fails()) {
+            return back()->with('alert.error', 'CSV upload failed - Invalid file');
+        }
 
-        $errors = '';
-        foreach ($file as $i => $line) {
-            $row_num = $i + 1;
-            logger()->info('$line', $line);
+        try {
+            // Get and setup CSV file
+            $importFile = $request->file('import_file');
+            $file = new \SplFileObject($importFile);
+            $file->setFlags(
+                \SplFileObject::READ_CSV |
+                \SplFileObject::READ_AHEAD |
+                \SplFileObject::SKIP_EMPTY |
+                \SplFileObject::DROP_NEW_LINE
+            );
 
-            if ($i < 1) {
-                continue;
-            }
+            $errors = [];
+            $success_count = 0;
+            // Process CSV rows
+            foreach ($file as $index => $line) {
+                $rowNum = $index + 1;
 
-            logger()->info('Line info', [
-                'row_num' => $row_num,
-            ]);
-
-            try {
-                $category = Category::where('name', $line[0])->first();
-
-                if ($category === null) {
-                    throw new Exception('Category data does not exist.');
+                // Skip header row
+                if ($index === 0) {
+                    continue;
                 }
 
-                $import_data = [
-                    'category_id' => $category->id,
-                    'name' => $line[1],
-                    'unit_cost' => $line[2],
-                    'unit_price' => $line[3],
-                    'stock_quantity' => $line[4],
-                ];
+                try {
+                    // Validate row data
+                    if (count($line) < 5) {
+                        throw new Exception('Invalid number of columns');
+                    }
 
-                logger()->info('$import_data', $import_data);
+                    // Find category
+                    $category = Category::where('name', trim($line[0]))->first();
+                    if (!$category) {
+                        throw new Exception("Category '{$line[0]}' not found");
+                    }
 
-                $this->validation($import_data, $import_data['unit_cost']);
+                    // Prepare import data
+                    $importData = [
+                        'category_id' => $category->id,
+                        'name' => trim($line[1]),
+                        'unit_cost' => (float)$line[2],
+                        'unit_price' => (float)$line[3],
+                        'stock_quantity' => (int)$line[4],
+                    ];
 
-                $product = Product::create($import_data);
-                logger()->info('Create $product', $product->toArray());
+                    // Validate product data
+                    $this->validation($importData, $importData['unit_cost']);
 
-            } catch (ArrayException $ae) {
-                $errors .= $row_num . ' : ' . implode(',', $ae->getMessages()) . '<br>';
-                logger()->info('$ie', [$ae->getCode(), $ae->getMessages()]);
+                    // Create product
+                    Product::create($importData);
 
-            } catch (Exception $e) {
-                $errors .= $row_num . ' : ' . $e->getMessage() . '<br>';
-                logger()->error('$e', [$e->getCode(), $e->getMessage()]);
+                    $success_count += 1;
+
+                } catch (ArrayException $ae) {
+                    $errors[] = "Row {$rowNum}: " . implode(', ', $ae->getMessages());
+                    logger()->warning('CSV import validation error', [
+                        'row' => $rowNum,
+                        'errors' => $ae->getMessages()
+                    ]);
+                } catch (Exception $e) {
+                    $errors[] = "Row {$rowNum}: {$e->getMessage()}";
+                    logger()->error('CSV import error', [
+                        'row' => $rowNum,
+                        'error' => $e->getMessage()
+                    ]);
+                }
             }
-        }
 
-        if ($errors) {
-            return back()
-                ->with('alert.error', $errors);
-        }
+            if (!empty($errors) && $success_count > 0) {
+                return back()
+                    ->with('alert.success', $success_count . ' product created successfully!')
+                    ->with('alert.error', implode('<br>', $errors));
+            } else {
+                return back()->with('alert.error', implode('<br>', $errors));
+            }
 
-        return redirect()->route('admin.products.index')
-            ->with('alert.success','CSV uploaded successfully.');
+            return redirect()
+                ->route('admin.products.index')
+                ->with('alert.success', 'CSV imported successfully');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            logger()->error('CSV import failed', ['error' => $e->getMessage()]);
+            return back()->with('alert.error', 'CSV import failed - ' . $e->getMessage());
+        }
     }
 
     private function validation(array $data, int $unit_cost = null)
@@ -221,53 +245,76 @@ class ProductController extends Controller
     }
 
     /**
-    * CSV export
-    */
+     * Export products to CSV file
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function export()
     {
-        $file_name = 'product_' . date('Ymd_His') . '.csv';
+        $file_name = 'product_' . now()->format('Ymd_His') . '.csv';
 
-        $callback = function()
-        {
-            $csv = fopen('php://output', 'w');
+        $callback = function() {
+            try {
+                $csv = fopen('php://output', 'w');
+                if ($csv === false) {
+                    throw new Exception('Failed to open output stream');
+                }
 
-            // Add UTF-8 BOM for proper rendering in some applications (e.g., Excel)
-            fprintf($csv, chr(0xEF).chr(0xBB).chr(0xBF));
+                // Add UTF-8 BOM for proper rendering in some applications (e.g., Excel)
+                fprintf($csv, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            fputcsv($csv, [
-                'category_name',
-                'product_name',
-                'unit_cost',
-                'unit_price',
-                'stock_quantity',
-                'create_date'
-            ]);
+                // Write CSV header
+                $headers = [
+                    'category_name',
+                    'product_name',
+                    'unit_cost',
+                    'unit_price',
+                    'stock_quantity',
+                    'create_date'
+                ];
+                if (fputcsv($csv, $headers) === false) {
+                    throw new Exception('Failed to write CSV headers');
+                }
 
-            Product::with('category')
-                ->orderBy('stock_quantity')
-                ->get()
-                ->groupBy(function ($product) {
-                    return $product->category->name;
-                })
-                ->map(function ($products, $category_name) use ($csv) {
-                    foreach ($products as $product) {
-                        fputcsv($csv, [
-                            $category_name,
-                            $product->name,
-                            $product->unit_cost,
-                            $product->unit_price,
-                            $product->stock_quantity,
-                            $product->created_at,
-                        ]);
-                    }
-                });
+                // Query and write product data
+                Product::with('category')
+                    ->orderBy('stock_quantity')
+                    ->chunk(1000, function($products) use ($csv) {
+                        foreach ($products->groupBy('category.name') as $category_name => $categoryProducts) {
+                            foreach ($categoryProducts as $product) {
+                                $row = [
+                                    $category_name,
+                                    $product->name,
+                                    $product->unit_cost,
+                                    $product->unit_pricea,
+                                    $product->stock_quantity,
+                                    $product->created_at->format('Y-m-d H:i:s'),
+                                ];
+                                if (fputcsv($csv, $row) === false) {
+                                    throw new Exception('Failed to write product data');
+                                }
+                            }
+                        }
+                    });
 
-            fclose($csv);
+            } catch (Exception $e) {
+                logger()->error('CSV export failed', [
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
+            } finally {
+                if (isset($csv) && is_resource($csv)) {
+                    fclose($csv);
+                }
+            }
         };
 
         return response()->stream($callback, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $file_name . '"',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
         ]);
     }
 }
