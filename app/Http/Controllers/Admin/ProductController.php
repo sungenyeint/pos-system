@@ -286,7 +286,7 @@ class ProductController extends Controller
                                     $category_name,
                                     $product->name,
                                     $product->unit_cost,
-                                    $product->unit_pricea,
+                                    $product->unit_price,
                                     $product->stock_quantity,
                                     $product->created_at->format('Y-m-d H:i:s'),
                                 ];
