@@ -94,7 +94,7 @@ class AttemptToAuthenticate
         $this->limiter->increment($request);
 
         throw ValidationException::withMessages([
-            Fortify::username() => [trans('Eメールアドレスまたはパスワードに誤りがあります。')],
+            Fortify::username() => [trans('Your email address or password is incorrect.')],
         ]);
     }
 

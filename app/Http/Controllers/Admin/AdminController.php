@@ -47,7 +47,7 @@ class AdminController extends Controller
 
         return redirect()
             ->route('admin.admins.index')
-            ->with('alert.success', '管理者を作成しました。');
+            ->with('alert.success', 'Admin creted successfully.');
     }
 
     /**
@@ -69,7 +69,7 @@ class AdminController extends Controller
 
         return redirect()
             ->route('admin.admins.index')
-            ->with('alert.success', '管理者を更新しました。');
+            ->with('alert.success', 'Admin updated successfully.');
     }
 
     /**
@@ -78,6 +78,6 @@ class AdminController extends Controller
     public function destroy(Admin $admin)
     {
         $admin->delete();
-        return back()->with('alert.success', '管理者を削除しました。');
+        return back()->with('alert.success', 'Admin deleted successfully.');
     }
 }

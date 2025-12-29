@@ -8,7 +8,7 @@
                 <div class="col-md-6 col-lg-5">
                     <div class="auth-box-right">
                         <div class="card">
-                            <div class="card-body" style="background: #E1F5FE">
+                            <div class="card-body" style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
                                 <form method="POST" action="{{ route('admin.authenticate') }}" autocomplete="off">
                                     @csrf
                                     <div class="form-head mb-4">
